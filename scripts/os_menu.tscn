@@ -1,0 +1,386 @@
+[gd_scene load_steps=2 format=3 uid="uid://os_menu_screen"]
+
+[ext_resource type="Script" path="res://scripts/ui/os_menu.gd" id="1_osmenu"]
+
+[node name="OSMenuScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_osmenu")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.039, 0.047, 0.059, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="OSWindow" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(760, 0)
+
+[node name="OSVBox" type="VBoxContainer" parent="CenterContainer/OSWindow"]
+theme_override_constants/separation = 0
+
+[node name="TitleBar" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox"]
+custom_minimum_size = Vector2(0, 44)
+
+[node name="TitleHBox" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/TitleBar"]
+theme_override_constants/separation = 8
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="DotsHBox" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox"]
+theme_override_constants/separation = 6
+size_flags_vertical = 4
+
+[node name="DotRed" type="ColorRect" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox/DotsHBox"]
+custom_minimum_size = Vector2(10, 10)
+size_flags_vertical = 4
+color = Color(1.0, 0.373, 0.337, 1)
+
+[node name="DotYellow" type="ColorRect" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox/DotsHBox"]
+custom_minimum_size = Vector2(10, 10)
+size_flags_vertical = 4
+color = Color(1.0, 0.741, 0.18, 1)
+
+[node name="DotGreen" type="ColorRect" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox/DotsHBox"]
+custom_minimum_size = Vector2(10, 10)
+size_flags_vertical = 4
+color = Color(0.153, 0.788, 0.247, 1)
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OS MENU"
+horizontal_alignment = 1
+unique_name_in_owner = true
+
+[node name="RoundLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox"]
+layout_mode = 2
+text = "ROUND 01"
+unique_name_in_owner = true
+
+[node name="TitleSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox"]
+
+[node name="BodyRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox"]
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="StatsBox" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+custom_minimum_size = Vector2(185, 0)
+size_flags_horizontal = 0
+theme_override_constants/separation = 0
+
+[node name="StaminaRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="StaminaKey" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/StaminaRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "STAMINA"
+
+[node name="StaminaVal" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/StaminaRow"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "100"
+horizontal_alignment = 2
+unique_name_in_owner = true
+
+[node name="WaitersRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="WaitersKey" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/WaitersRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "WAITERS"
+
+[node name="WaitersVal" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/WaitersRow"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "0"
+horizontal_alignment = 2
+unique_name_in_owner = true
+
+[node name="ChefsRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="ChefsKey" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/ChefsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "CHEFS"
+
+[node name="ChefsVal" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/ChefsRow"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "0"
+horizontal_alignment = 2
+unique_name_in_owner = true
+
+[node name="UnservicedRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="UnservicedKey" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/UnservicedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "NOT SERVICED"
+
+[node name="UnservicedVal" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/StatsBox/UnservicedRow"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "3"
+horizontal_alignment = 2
+unique_name_in_owner = true
+
+[node name="VSep1" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+
+[node name="FIFOPanel" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+size_flags_horizontal = 3
+mouse_filter = 0
+
+[node name="FIFOVBox" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel"]
+theme_override_constants/separation = 0
+
+[node name="FIFOHeader" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="FIFOName" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "FIFO"
+
+[node name="FIFOBadge" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "-5 STA"
+
+[node name="FIFOSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox"]
+
+[node name="FIFOInputs" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox"]
+theme_override_constants/separation = 10
+
+[node name="FIFOWaitersRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs"]
+theme_override_constants/separation = 6
+
+[node name="FIFOWaitersLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOWaitersRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "WAITERS"
+
+[node name="FIFOWaiters" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOWaitersRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="FIFOChefsRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs"]
+theme_override_constants/separation = 6
+
+[node name="FIFOChefsLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "CHEFS"
+
+[node name="FIFOChefs" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefsRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="FIFOCostLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox"]
+layout_mode = 2
+text = "Arrival order  |  non-preemptive"
+horizontal_alignment = 1
+
+[node name="VSep2" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+
+[node name="SJFPanel" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+size_flags_horizontal = 3
+mouse_filter = 0
+
+[node name="SJFVBox" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel"]
+theme_override_constants/separation = 0
+
+[node name="SJFHeader" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="SJFName" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "SJF"
+
+[node name="SJFBadge" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "-15 STA"
+
+[node name="SJFSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox"]
+
+[node name="SJFInputs" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox"]
+theme_override_constants/separation = 10
+
+[node name="SJFWaitersRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs"]
+theme_override_constants/separation = 6
+
+[node name="SJFWaitersLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFWaitersRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "WAITERS"
+
+[node name="SJFWaiters" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFWaitersRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="SJFChefsRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs"]
+theme_override_constants/separation = 6
+
+[node name="SJFChefsLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFChefsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "CHEFS"
+
+[node name="SJFChefs" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFChefsRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="SJFCostLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox"]
+layout_mode = 2
+text = "Closest plate  |  commits on assign"
+horizontal_alignment = 1
+
+[node name="VSep3" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+
+[node name="SJCFPanel" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow"]
+size_flags_horizontal = 3
+mouse_filter = 0
+
+[node name="SJCFVBox" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel"]
+theme_override_constants/separation = 0
+
+[node name="SJCFHeader" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox"]
+custom_minimum_size = Vector2(0, 38)
+theme_override_constants/separation = 0
+
+[node name="SJCFName" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "SJCF"
+
+[node name="SJCFBadge" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFHeader"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "-25 STA"
+
+[node name="SJCFSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox"]
+
+[node name="SJCFInputs" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox"]
+theme_override_constants/separation = 10
+
+[node name="SJCFWaitersRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs"]
+theme_override_constants/separation = 6
+
+[node name="SJCFWaitersLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFWaitersRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "WAITERS"
+
+[node name="SJCFWaiters" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFWaitersRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="SJCFChefsRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs"]
+theme_override_constants/separation = 6
+
+[node name="SJCFChefsLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "CHEFS"
+
+[node name="SJCFChefs" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsRow"]
+custom_minimum_size = Vector2(72, 0)
+max_value = 9.0
+step = 1.0
+unique_name_in_owner = true
+
+[node name="SJCFCostLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox"]
+layout_mode = 2
+text = "Re-routes mid-delivery  |  preemptive"
+horizontal_alignment = 1
+
+[node name="FooterSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox"]
+
+[node name="FooterRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox"]
+custom_minimum_size = Vector2(0, 52)
+theme_override_constants/separation = 0
+
+[node name="ServicedBox" type="VBoxContainer" parent="CenterContainer/OSWindow/OSVBox/FooterRow"]
+custom_minimum_size = Vector2(185, 0)
+size_flags_horizontal = 0
+theme_override_constants/separation = 0
+
+[node name="ServicedRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/FooterRow/ServicedBox"]
+theme_override_constants/separation = 0
+size_flags_vertical = 4
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ServicedKey" type="Label" parent="CenterContainer/OSWindow/OSVBox/FooterRow/ServicedBox/ServicedRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "SERVICED"
+
+[node name="ServicedVal" type="Label" parent="CenterContainer/OSWindow/OSVBox/FooterRow/ServicedBox/ServicedRow"]
+layout_mode = 2
+size_flags_vertical = 4
+text = "0"
+horizontal_alignment = 2
+unique_name_in_owner = true
+
+[node name="FooterVSep" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/FooterRow"]
+
+[node name="StartRoundBtn" type="Button" parent="CenterContainer/OSWindow/OSVBox/FooterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+text = "START ROUND"
+unique_name_in_owner = true

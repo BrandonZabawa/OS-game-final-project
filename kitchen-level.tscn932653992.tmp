@@ -15431,13 +15431,6 @@ sources/1 = SubResource("TileSetAtlasSource_kho2p")
 [node name="Node2D" type="Node2D" unique_id=1866308232]
 position = Vector2(407, 329)
 
-[node name="OSMenuScreen" parent="." unique_id=183325884 instance=ExtResource("8_k25mb")]
-offset_left = 162.0
-offset_top = 192.0
-offset_right = 162.0
-offset_bottom = 192.0
-metadata/_edit_use_anchors_ = true
-
 [node name="Environment" type="Node2D" parent="." unique_id=1900126737]
 position = Vector2(143, -117)
 
@@ -15475,7 +15468,7 @@ position = Vector2(21, -85)
 
 [node name="chef5" parent="Characters" unique_id=993555011 instance=ExtResource("6_wrif2")]
 top_level = true
-position = Vector2(429, 132)
+position = Vector2(450, 224)
 
 [node name="chef6" parent="Characters" unique_id=671505281 instance=ExtResource("6_wrif2")]
 position = Vector2(-16, -83)
@@ -15503,6 +15496,13 @@ position = Vector2(8, 110)
 
 [node name="customer7" parent="Characters" unique_id=1326294086 instance=ExtResource("7_wrif2")]
 position = Vector2(-98, 110)
+
+[node name="OSMenuScreen" parent="Characters" unique_id=183325884 instance=ExtResource("8_k25mb")]
+offset_left = 19.0
+offset_top = 309.0
+offset_right = 19.0
+offset_bottom = 309.0
+metadata/_edit_use_anchors_ = true
 
 [node name="FoodItems" type="Node2D" parent="." unique_id=212872155]
 position = Vector2(143, -117)

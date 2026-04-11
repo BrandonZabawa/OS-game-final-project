@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://cahtyxfo4c5or"]
+
+[ext_resource type="Texture2D" uid="uid://d3cq5emp7uehk" path="res://my_character_assets/sprites/character/Spritesheet/roguelikeChar_transparent.png" id="2_char"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(10, 6)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pickup"]
+size = Vector2(14, 14)
+
+[node name="Customer" type="CharacterBody2D" unique_id=1287450519]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=360982497]
+texture = ExtResource("2_char")
+region_enabled = true
+region_rect = Rect2(34, 7, 16, 16)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=555777873]
+position = Vector2(0, 4)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="HeldItemSlot" type="Node2D" parent="." unique_id=837215712]
+position = Vector2(0, -14)
+
+[node name="PickupZone" type="Area2D" parent="." unique_id=1837829233]
+
+[node name="PickupShape" type="CollisionShape2D" parent="PickupZone" unique_id=1363002661]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_pickup")
