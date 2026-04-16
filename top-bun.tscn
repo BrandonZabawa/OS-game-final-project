@@ -677,8 +677,8 @@ separation = Vector2i(3, 2)
 tile_size = Vector2i(19, 18)
 sources/0 = SubResource("TileSetAtlasSource_a0uf4")
 
-[node name="Node2D" type="Node2D" unique_id=553641104]
+[node name="top-bun" type="Node2D" unique_id=553641104]
 
-[node name="top-bun" type="TileMapLayer" parent="." unique_id=378221519]
-tile_map_data = PackedByteArray(0, 0, 237, 255, 247, 255, 0, 0, 17, 0, 19, 0, 0, 0, 237, 255, 248, 255, 0, 0, 17, 0, 20, 0, 0, 0, 238, 255, 247, 255, 0, 0, 18, 0, 19, 0, 0, 0, 238, 255, 248, 255, 0, 0, 18, 0, 20, 0, 0, 0, 249, 255, 249, 255, 0, 0, 6, 0, 16, 0, 0, 0)
+[node name="top-bun-sprite" type="TileMapLayer" parent="." unique_id=378221519]
+tile_map_data = PackedByteArray(0, 0, 237, 255, 247, 255, 0, 0, 17, 0, 19, 0, 0, 0, 237, 255, 248, 255, 0, 0, 17, 0, 20, 0, 0, 0, 238, 255, 247, 255, 0, 0, 18, 0, 19, 0, 0, 0, 238, 255, 248, 255, 0, 0, 18, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 16, 0, 0, 0)
 tile_set = SubResource("TileSet_3sb2p")

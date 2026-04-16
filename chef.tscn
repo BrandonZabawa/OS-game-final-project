@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cg56f71cklckm"]
 
-[ext_resource type="Script" uid="uid://gps2t4rlfy7m" path="res://chef.gd" id="1_chef"]
+[ext_resource type="Script" uid="uid://buwm6jtn08xp1" path="res://scripts/states/chef_fsm.gd" id="1_nrypr"]
 [ext_resource type="Texture2D" uid="uid://d3cq5emp7uehk" path="res://my_character_assets/sprites/character/Spritesheet/roguelikeChar_transparent.png" id="2_char"]
 [ext_resource type="Texture2D" uid="uid://bo0qq5yvu4xhr" path="res://my_character_assets/sprites/character/Spritesheet/tile_0000.png" id="2_j8bwy"]
 [ext_resource type="Texture2D" uid="uid://e6oto2m7lwx2" path="res://my_character_assets/sprites/character/Spritesheet/tile_0001.png" id="3_5cx38"]
@@ -603,17 +603,19 @@ margins = Vector2i(17, 0)
 [sub_resource type="TileSet" id="TileSet_v0wnx"]
 sources/0 = SubResource("TileSetAtlasSource_5cx38")
 
-[node name="Chef" type="CharacterBody2D" unique_id=1738661016]
-script = ExtResource("1_chef")
+[node name="ChefNPC" type="CharacterBody2D" unique_id=1738661016 groups=["chefs"]]
+script = ExtResource("1_nrypr")
 
-[node name="Sprite2D" type="AnimatedSprite2D" parent="." unique_id=425786409]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=425786409]
 sprite_frames = SubResource("SpriteFrames_v0wnx")
-frame_progress = 0.09617888
+frame_progress = 0.004877379
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1273043228]
 light_mask = 1023
 position = Vector2(0, 4)
 shape = SubResource("RectangleShape2D_5cx38")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=637107918]
 
 [node name="HeldItemSlot" type="Node2D" parent="." unique_id=1688716380]
 position = Vector2(0, -14)

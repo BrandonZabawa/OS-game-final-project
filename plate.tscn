@@ -674,7 +674,7 @@ texture = ExtResource("1_s5yhh")
 [sub_resource type="TileSet" id="TileSet_g4jty"]
 sources/0 = SubResource("TileSetAtlasSource_uw33f")
 
-[node name="Node2D" type="Node2D" unique_id=1883803842]
+[node name="Node2D" type="Node2D" unique_id=1883803842 groups=["plates"]]
 
 [node name="cust-plate" type="TileMapLayer" parent="." unique_id=726393171]
 tile_map_data = PackedByteArray(0, 0, 252, 255, 2, 0, 0, 0, 16, 0, 6, 0, 0, 0, 252, 255, 3, 0, 0, 0, 16, 0, 7, 0, 0, 0, 253, 255, 2, 0, 0, 0, 17, 0, 6, 0, 0, 0, 253, 255, 3, 0, 0, 0, 17, 0, 7, 0, 0, 0)

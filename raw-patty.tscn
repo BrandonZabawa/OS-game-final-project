@@ -674,9 +674,10 @@ texture = ExtResource("1_nhk8q")
 [sub_resource type="TileSet" id="TileSet_egklv"]
 sources/0 = SubResource("TileSetAtlasSource_qxg11")
 
-[node name="Node2D" type="Node2D" unique_id=829529583]
+[node name="raw-patty" type="Node2D" unique_id=829529583]
 
-[node name="raw-patty" type="TileMapLayer" parent="." unique_id=1482010601]
+[node name="raw-patty-sprite" type="TileMapLayer" parent="." unique_id=1482010601]
 top_level = true
-tile_map_data = PackedByteArray(0, 0, 254, 255, 248, 255, 0, 0, 20, 0, 19, 0, 0, 0)
+tile_map_data = PackedByteArray(0, 0, 26, 0, 5, 0, 0, 0, 20, 0, 19, 0, 0, 0)
 tile_set = SubResource("TileSet_egklv")
+collision_enabled = false

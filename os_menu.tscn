@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://d4kkx2bjy11jd" path="res://scripts/os-menu-script/os_menu.gd" id="1_2g2i4"]
 
+[sub_resource type="Theme" id="Theme_2g2i4"]
+
 [node name="OSMenuScreen" type="Control" unique_id=183325884]
 layout_mode = 3
 anchors_preset = 15
@@ -31,6 +33,7 @@ grow_vertical = 2
 [node name="OSWindow" type="PanelContainer" parent="CenterContainer" unique_id=2102271661]
 custom_minimum_size = Vector2(760, 0)
 layout_mode = 2
+theme = SubResource("Theme_2g2i4")
 
 [node name="OSVBox" type="VBoxContainer" parent="CenterContainer/OSWindow" unique_id=115566768]
 layout_mode = 2
@@ -186,16 +189,16 @@ custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
 
-[node name="FIFOChefsPrep" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs" unique_id=430854838]
+[node name="FIFOChefPrep" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs" unique_id=430854838]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="FIFOChefsPrepLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefsPrep" unique_id=1670602336]
+[node name="FIFOChefsPrepLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefPrep" unique_id=1670602336]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "CHEFS: Prep"
 
-[node name="FIFOChefPrepNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefsPrep" unique_id=1109484402]
+[node name="FIFOChefPrepNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefPrep" unique_id=1109484402]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
@@ -210,6 +213,7 @@ size_flags_horizontal = 3
 text = "CHEFS: Cook"
 
 [node name="FIFOChefCookNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/FIFOPanel/FIFOVBox/FIFOInputs/FIFOChefCook" unique_id=1479657381]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
@@ -277,6 +281,7 @@ size_flags_horizontal = 3
 text = "CHEFS: Prep"
 
 [node name="SJFChefPrepNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFChefPrep" unique_id=119244597]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
@@ -290,6 +295,7 @@ size_flags_horizontal = 3
 text = "CHEFS: Cook"
 
 [node name="SJFChefCookNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJFPanel/SJFVBox/SJFInputs/SJFChefCook" unique_id=153351829]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
@@ -346,33 +352,34 @@ custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
 
-[node name="SJCFChefsPrep" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs" unique_id=1042955968]
+[node name="SJCFChefPrep" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs" unique_id=1042955968]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SJCFChefsPrepLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsPrep" unique_id=681663513]
+[node name="SJCFChefsPrepLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefPrep" unique_id=681663513]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "CHEFS: Prep"
 
-[node name="SJCFChefPrepNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsPrep" unique_id=1347800032]
+[node name="SJCFChefPrepNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefPrep" unique_id=1347800032]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
 
-[node name="SJCFChefsCook" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs" unique_id=1221427801]
+[node name="SJCFChefCook" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs" unique_id=1221427801]
 layout_mode = 2
 
-[node name="SJCFChefsCookLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsCook" unique_id=1196815490]
+[node name="SJCFChefsCookLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefCook" unique_id=1196815490]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "CHEFS: Cook"
 
-[node name="SJCFChefCookNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefsCook" unique_id=1658759695]
+[node name="SJCFChefCookNum" type="SpinBox" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox/SJCFInputs/SJCFChefCook" unique_id=1658759695]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
-script = ExtResource("1_2g2i4")
 
 [node name="SJCFCostLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/BodyRow/SJCFPanel/SJCFVBox" unique_id=2062529298]
 layout_mode = 2
