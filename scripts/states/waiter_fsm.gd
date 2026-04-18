@@ -122,7 +122,8 @@ func _on_state_enter(state: int) -> void:
 		State.WALK_TO_PLATE:
 			play_anim("walk")
 			if target_plate:
-				move_to(target_plate.global_position)
+				#move_to(target_plate.global_position)
+				move_to(waiter_table_node.global_position)
 			else:
 				push_warning("WaiterFSM (%s): target_plate is null — returning to idle" % name)
 				change_state(State.RETURN_TO_IDLE)
