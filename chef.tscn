@@ -616,6 +616,7 @@ position = Vector2(0, 4)
 shape = SubResource("RectangleShape2D_5cx38")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=637107918]
+avoidance_enabled = true
 
 [node name="HeldItemSlot" type="Node2D" parent="." unique_id=1688716380]
 position = Vector2(0, -14)

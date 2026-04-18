@@ -77,10 +77,11 @@ var current_role: String = ""
 # ---------------------------------------------------------------------------
 
 func _ready() -> void:
+	if nav_agent == null:
+		push_error("%s: NavigationAgent2D child missing — add one to this NPC's scene" % name)
+		return
 	nav_agent.navigation_finished.connect(_on_navigation_finished)
-
-	# Give each subclass a chance to do its own _ready work without
-	# needing to call super._ready() (which Godot beginners often forget).
+	# Wire signals BEFORE _on_ready() so subclasses can safely call move_to().
 	_on_ready()
 
 func _physics_process(delta: float) -> void:
@@ -155,19 +156,21 @@ func change_state(new_state: int) -> void:
 ## Tell this NPC to walk to a world-space position.
 ## The NavigationAgent2D will compute an avoidance-aware path automatically.
 func move_to(target_pos: Vector2) -> void:
+	if nav_agent == null:
+		return
 	nav_agent.target_position = target_pos
 	_is_moving = true
 
 ## Returns true once the nav agent has finished its current path.
 ## Use this inside _process_state() to trigger the next state after arrival.
 func has_reached_target() -> bool:
+	if nav_agent == null:
+		return true   # No nav agent = treat as already arrived so logic doesn't hang
 	return nav_agent.is_navigation_finished()
 
 ## Internal: called each physics frame while _is_moving == true.
-## Feeds the next waypoint direction to the nav agent so it can compute
-## avoidance-safe velocity via velocity_computed signal.
 func _process_navigation() -> void:
-	if nav_agent.is_navigation_finished():
+	if nav_agent == null or nav_agent.is_navigation_finished():
 		return
 	var next_pos:  Vector2 = nav_agent.get_next_path_position()
 	var direction: Vector2 = (next_pos - global_position).normalized()

@@ -40,4 +40,26 @@
 - [ ] Need to fix Round-Starter so that it interacts properly with the OS-Menu mechanics
    - [ ] Null references on groups being called (problematic). Fix this and should be good for all other groups in game (rinse and repeat process)
    - [ ] Move onto working on Customer & Waiter requirements (Chef states are > complexity)
-   - [ ] Add sounds for Chef, Waiter, & Customer (for now Customer makes positive sound if waiter is near them, and waiter makes positive sound once they reach targetted plate). 
+   - [ ] Add sounds for Chef, Waiter, & Customer (for now Customer makes positive sound if waiter is near them, and waiter makes positive sound once they reach targetted plate).
+
+## Sucesses and failures to fix
+### Sucesses
+1. Rounds can play
+2. Redesign of OS game mechanic finished
+3. Corrected FSM scripts to stop generating NULL errors (added scripts to scene tree for alt-names)
+4. Added necessary nodes back to scene tree for group names to be references easily within game scene.
+5. Redesign game logic focusing on max-turnbased infinite gameplay until player loses 3HP (then game over)
+### Failures (bugs)
+1. WaiterFSM still not moving the Waiter sprites to designated nodes
+2. Waiter allocation moves in odd format (instead of updating inline with row-on the game scene it updates in strange queue manner)
+3. Rounds complete only for waiter allocated however, starving customers (not fed) do not dock 1hp from player
+4. Customers cannot automatically be generated into the scene from scene-sprite (idk why)
+5. Chef prep works and does not brick the game from completeing a round, however **chef cook** bricks the round by executing a infinite loop of a continuous round until the burgers are made.
+6. Customers have not yet been tweaked to have floating text above their heads indicating the max-rounds they're willing to wait. (This should be randomized)
+7. Sound effects have not been added to the game yet.
+8. Music has not been added to the game yet.
+9. Customers not moving to opened plates automatically when the round begins
+10. Need to confirm waiters in WaiterFSM travels to the assembled burger first, and then to the desired plate.
+11. Need to confrim chefs travel to raw patty once they're allocated to **cook** and then add the **cooked-patty** inside the scene tree to confirm this logic works.
+12. Need to confirm chef **cook** grabs cooked burger and brings it to **prep-table** then return back to idle state of where it started with the rest of the party until the player designates a node for them again.
+13. Need to confirm chef **prep** takes the cooked patty on the table and preps it by assembling the **sandwhich** 

@@ -73,7 +73,7 @@ const ASSEMBLY_STEP_DELAY : float = 0.35
 # Runtime
 # ---------------------------------------------------------------------------
 
-var current_role  : String = "idle"
+#var current_role  : String = "idle"
 var _state_gen    : int    = 0
 
 # ---------------------------------------------------------------------------
@@ -89,6 +89,7 @@ func change_state(new_state: int) -> void:
 # ---------------------------------------------------------------------------
 
 func _on_ready() -> void:
+	BaseFsm.current_role = "idle" # the group name not the actual class name
 	_resolve_node_refs()
 	change_state(State.IDLE)
 
@@ -174,7 +175,7 @@ func _process_state(_delta: float) -> void:
 
 		State.WALK_TO_GRILL:
 			if has_reached_target():
-				if current_role == "cook":
+				if BaseFsm.current_role == "cook":
 					change_state(State.COOK_PLACE)
 				else:
 					change_state(State.PREP_PICKUP)
@@ -197,7 +198,7 @@ func _process_state(_delta: float) -> void:
 # ---------------------------------------------------------------------------
 
 func _run_turn(role: String) -> void:
-	current_role = role
+	BaseFsm.current_role = role
 
 	match role:
 

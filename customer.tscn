@@ -29,6 +29,7 @@ position = Vector2(2, 1)
 shape = SubResource("RectangleShape2D_7tiyv")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=1081306777]
+avoidance_enabled = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1987461449]
 position = Vector2(3, -2)

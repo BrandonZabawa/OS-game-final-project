@@ -15,6 +15,16 @@ run/main_scene="uid://dkrg11bc2fu7d"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameConfig="*uid://cvrg6upgnf5p8"
+KitchenScene="*uid://c0y2afeawrde"
+RoundManager="*uid://by2wi7kfel2gc"
+BaseFsm="*uid://ca4dhvbri05wl"
+ChefFsm="*uid://buwm6jtn08xp1"
+CustomerFsm="*uid://bqokitoirttvn"
+WaiterFsm="*uid://bh2k3hdbx885x"
+
 [editor]
 
 version_control/autoload_on_startup=true
@@ -26,8 +36,8 @@ customers=""
 waiters=""
 plates=""
 waiter_table=""
-hibachi_grill=""
 death_sound=""
+hibatchi_grill=""
 
 [input]
 
