@@ -1,36 +1,26 @@
 # =============================================================================
 # chef_fsm.gd
 # =============================================================================
-# PURPOSE: Chef NPC with two distinct turn roles assigned by the player.
+# PURPOSE: Controls a Chef NPC through the full burger pipeline.
 #
-# ROLES (set each round via OS menu → RoundManager → execute_turn()):
+# OS SCHEDULING ANALOGY:
+#   The Chef models a CPU executing a multi-step job with a blocking I/O wait
+#   (the 5-second cook timer).  While the patty cooks the Chef is "blocked",
+#   just like a process waiting on a disk read.  Once cooking completes the
+#   Chef is "unblocked" and resumes execution (picks up patty → assembles
+#   burger → delivers to waiter table).
 #
-#   "cook"  — Pickup raw patty → walk to hibachi grill → place patty.
-#             The patty cooks for exactly 1 round (it becomes available in
-#             GameConfig.cooked_patties next turn via advance_pipeline()).
-#             Once cooked, patties CANNOT burn — they wait indefinitely.
-#
-#   "prep"  — Walk to hibachi grill → pick up a cooked patty
-#             (GameConfig.cooked_patties must be > 0) → walk to prep table
-#             → assemble burger (add top + bottom bun) → walk to waiter table
-#             → place assembled burger (increments GameConfig.assembled_burgers).
-#             If no cooked patty is available, the chef idles this turn.
-#
-# OS ANALOGY:
-#   The Cook chef is a CPU doing compute-bound work (placing a job in the
-#   pipeline).  The Prep chef is doing I/O-bound work — it can only proceed
-#   when upstream resources (cooked patties) are ready.  Together they model
-#   a two-stage pipeline with a one-round latency between stages.
-#
-# STATE FLOW (cook role):
-#   IDLE → WALK_TO_GRILL → COOK_PLACE → RETURN_TO_IDLE
-#
-# STATE FLOW (prep role, patty available):
-#   IDLE → WALK_TO_GRILL → PREP_PICKUP → WALK_TO_PREP → PREP_ASSEMBLE
-#        → WALK_TO_WAITER_TABLE → PREP_PLACE → RETURN_TO_IDLE
-#
-# STATE FLOW (prep role, NO patty):
-#   IDLE → (emit turn_complete immediately, stays IDLE)
+# STATE FLOW:
+#   IDLE
+#     └─► WALK_TO_GRILL        (navigate to hibachi grill node)
+#           └─► PLACE_PATTY    (put raw patty on grill — brief action)
+#                 └─► WAIT_COOK  (BLOCKED 5 s — cook timer fires _on_cook_finished)
+#                       └─► PICKUP_PATTY  (take cooked patty off grill)
+#                             └─► WALK_TO_PREP  (navigate to assembly counter)
+#                                   └─► ASSEMBLE_BURGER  (3 sub-steps w/ delays)
+#                                         └─► WALK_TO_WAITER_TABLE
+#                                               └─► PLACE_BURGER  ──► burger_ready signal
+#                                                     └─► RETURN_TO_IDLE  ──► IDLE (loop)
 # =============================================================================
 
 class_name ChefFSM
@@ -43,196 +33,192 @@ extends BaseFSM
 enum State {
 	IDLE,
 	WALK_TO_GRILL,
-	COOK_PLACE,             # cook role: place raw patty on grill
-	PREP_PICKUP,            # prep role: pick up cooked patty from grill
+	PLACE_PATTY,
+	WAIT_COOK,            # Blocked — patty cooking (5 s)
+	PICKUP_PATTY,
 	WALK_TO_PREP,
-	PREP_ASSEMBLE,          # prep role: assemble burger with buns
+	ASSEMBLE_BURGER,      # 3-step sequence: bottom-bun → patty → top-bun
 	WALK_TO_WAITER_TABLE,
-	PREP_PLACE,             # prep role: place assembled burger on counter
+	PLACE_BURGER,
 	RETURN_TO_IDLE,
 }
 
 # ---------------------------------------------------------------------------
-# Inspector-configurable node references
-# Drag your scene nodes into these slots. Group queries are used as fallbacks.
+# Exported node references
+# (Drag the actual scene nodes into these slots in the Godot Inspector)
 # ---------------------------------------------------------------------------
 
-@export var grill_node        : Node2D   ## Hibachi grill node
-@export var prep_area_node    : Node2D   ## Prep/assembly counter
-@export var waiter_table_node : Node2D   ## Staging counter for assembled burgers
-@export var idle_position     : Vector2 = Vector2.ZERO
+## The hibachi grill Node2D — Chef walks here to cook patties.
+@export var grill_node:        Node2D
+
+## Counter/prep area Node2D — Chef walks here to assemble the burger.
+@export var prep_area_node:    Node2D
+
+## Waiter-side table Node2D — Chef drops the finished burger here for the Waiter.
+@export var waiter_table_node: Node2D
+
+## World position the Chef returns to when not on a task (set in Inspector).
+@export var idle_position:     Vector2 = Vector2.ZERO
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 
-const ACTION_DELAY        : float = 0.30
-const ASSEMBLY_STEP_DELAY : float = 0.35
+## Patties take exactly 5 seconds to cook — matching the TODO requirement.
+const COOK_TIME:     float = 5.0
+
+## Short pause (seconds) for "placing" or "picking up" actions — gives the
+## animation a beat to play before the state transitions forward.
+const ACTION_DELAY:  float = 0.35
+
+## Pause between each assembly sub-step so the player can see the sequence.
+const ASSEMBLY_STEP_DELAY: float = 0.4
 
 # ---------------------------------------------------------------------------
-# Runtime
+# Runtime state
 # ---------------------------------------------------------------------------
 
-var current_role  : String = "idle"
-var _state_gen    : int    = 0
+## Timer node created at runtime for the cook wait — no scene setup required.
+var _cook_timer:     Timer
+
+## Tracks how many assembly sub-steps have completed (0–3).
+## 0 = none, 1 = bottom-bun placed, 2 = patty placed, 3 = top-bun (complete).
+var _assembly_step:  int = 0
 
 # ---------------------------------------------------------------------------
-# Stale-coroutine guard
+# Signals
 # ---------------------------------------------------------------------------
 
-func change_state(new_state: int) -> void:
-	_state_gen += 1
-	super.change_state(new_state)
+## Emitted when the burger is placed on the waiter-side table and is ready
+## for a Waiter to pick up.  RoundManager or WaiterFSM listens to this.
+signal burger_ready(chef: ChefFSM)
 
 # ---------------------------------------------------------------------------
 # BaseFSM hooks
 # ---------------------------------------------------------------------------
 
 func _on_ready() -> void:
-	_resolve_node_refs()
+	# Build cook timer in code — avoids requiring a Timer node in the scene.
+	_cook_timer             = Timer.new()
+	_cook_timer.one_shot    = true
+	_cook_timer.wait_time   = COOK_TIME
+	_cook_timer.timeout.connect(_on_cook_finished)
+	add_child(_cook_timer)
+
+	# Begin the pipeline immediately when the Chef spawns.
 	change_state(State.IDLE)
 
-
 func _on_state_enter(state: int) -> void:
-	var gen := _state_gen
-
 	match state:
 
 		State.IDLE:
 			play_anim("idle")
+			# Small idle beat before re-entering the cooking pipeline.
+			# Using a lambda so we don't flood the scene with extra Timer nodes.
+			await get_tree().create_timer(0.5).timeout
+			change_state(State.WALK_TO_GRILL)
 
 		State.WALK_TO_GRILL:
 			play_anim("walk")
-			var target := _get_node_or_group(grill_node, "hibatchi_grill")
-			if target:
-				move_to(target.global_position)
+			# Navigate to the hibachi grill.  _process_state monitors arrival.
+			if grill_node:
+				move_to(grill_node.global_position)
 			else:
-				push_error("ChefFSM: grill_node not set and no node in 'hibatchi_grill' group!")
-				_finish_turn()
+				push_error("ChefFSM: grill_node not assigned!")
 
-		State.COOK_PLACE:
+		State.PLACE_PATTY:
+			# Visual beat: play place animation, then short delay before cooking.
 			play_anim("place")
 			await get_tree().create_timer(ACTION_DELAY).timeout
-			if _state_gen != gen: return
-			GameConfig.patties_cooking += 1
-			print("ChefFSM (%s): placed raw patty — patties_cooking=%d" \
-				  % [name, GameConfig.patties_cooking])
-			change_state(State.RETURN_TO_IDLE)
+			change_state(State.WAIT_COOK)
 
-		State.PREP_PICKUP:
+		State.WAIT_COOK:
+			# Chef is "blocked" here — just stands by the grill.
+			# The cook timer will fire _on_cook_finished() after COOK_TIME seconds.
+			play_anim("idle")
+			_cook_timer.start()
+
+		State.PICKUP_PATTY:
+			# Patty is done — pick it up with a brief animation beat.
 			play_anim("pickup")
 			await get_tree().create_timer(ACTION_DELAY).timeout
-			if _state_gen != gen: return
-			GameConfig.cooked_patties -= 1
-			print("ChefFSM (%s): picked up cooked patty — cooked_patties=%d" \
-				  % [name, GameConfig.cooked_patties])
 			change_state(State.WALK_TO_PREP)
 
 		State.WALK_TO_PREP:
 			play_anim("walk")
-			var target := _get_node_or_group(prep_area_node, "prep_area")
-			if target:
-				move_to(target.global_position)
+			if prep_area_node:
+				move_to(prep_area_node.global_position)
 			else:
-				push_error("ChefFSM: prep_area_node not set and no node in 'prep_area' group!")
-				_finish_turn()
+				push_error("ChefFSM: prep_area_node not assigned!")
 
-		State.PREP_ASSEMBLE:
+		State.ASSEMBLE_BURGER:
+			_assembly_step = 0
 			play_anim("assemble")
-			# Three sub-steps: bottom bun → patty → top bun
-			for step in ["bottom_bun", "patty", "top_bun"]:
-				await get_tree().create_timer(ASSEMBLY_STEP_DELAY).timeout
-				if _state_gen != gen: return
-				print("ChefFSM (%s): assembly step — %s" % [name, step])
-			change_state(State.WALK_TO_WAITER_TABLE)
+			# Run the three-step assembly as a coroutine so the state machine
+			# doesn't block _physics_process while waiting between steps.
+			_run_assembly_sequence()
 
 		State.WALK_TO_WAITER_TABLE:
 			play_anim("walk")
-			var target := _get_node_or_group(waiter_table_node, "waiter_table")
-			if target:
-				move_to(target.global_position)
+			if waiter_table_node:
+				move_to(waiter_table_node.global_position)
 			else:
-				push_error("ChefFSM: waiter_table_node not set and no node in 'waiter_table' group!")
-				_finish_turn()
+				push_error("ChefFSM: waiter_table_node not assigned!")
 
-		State.PREP_PLACE:
+		State.PLACE_BURGER:
 			play_anim("place")
 			await get_tree().create_timer(ACTION_DELAY).timeout
-			if _state_gen != gen: return
-			GameConfig.assembled_burgers += 1
-			print("ChefFSM (%s): placed assembled burger — assembled_burgers=%d" \
-				  % [name, GameConfig.assembled_burgers])
+			# Signal the RoundManager / WaiterFSM that a burger is waiting.
+			burger_ready.emit(self)
 			change_state(State.RETURN_TO_IDLE)
 
 		State.RETURN_TO_IDLE:
 			play_anim("walk")
 			move_to(idle_position)
 
-
 func _process_state(_delta: float) -> void:
+	# Only movement-completion checks live here — keeps each case a single line.
 	match current_state:
 
 		State.WALK_TO_GRILL:
 			if has_reached_target():
-				if current_role == "cook":
-					change_state(State.COOK_PLACE)
-				else:
-					change_state(State.PREP_PICKUP)
+				change_state(State.PLACE_PATTY)
 
 		State.WALK_TO_PREP:
 			if has_reached_target():
-				change_state(State.PREP_ASSEMBLE)
+				change_state(State.ASSEMBLE_BURGER)
 
 		State.WALK_TO_WAITER_TABLE:
 			if has_reached_target():
-				change_state(State.PREP_PLACE)
+				change_state(State.PLACE_BURGER)
 
 		State.RETURN_TO_IDLE:
 			if has_reached_target():
 				change_state(State.IDLE)
-				_finish_turn()
 
 # ---------------------------------------------------------------------------
-# Turn execution (called by RoundManager)
+# Private helpers
 # ---------------------------------------------------------------------------
 
-func _run_turn(role: String) -> void:
-	current_role = role
+## Runs the three-step burger assembly as a coroutine.
+## Steps: (1) bottom bun → (2) cooked patty → (3) top bun.
+## Each step has an ASSEMBLY_STEP_DELAY beat so the animation is visible.
+## After all three steps complete the Chef heads to the waiter table.
+func _run_assembly_sequence() -> void:
+	var step_names := ["bottom_bun", "patty", "top_bun"]
+	for step_name in step_names:
+		await get_tree().create_timer(ASSEMBLY_STEP_DELAY).timeout
+		_assembly_step += 1
+		# You can hook a visual/audio cue here per step, e.g.:
+		#   $AssemblyParticles.emitting = true
+		#   $StepAudio.play()
+		print("ChefFSM: assembly step %d (%s) complete" % [_assembly_step, step_name])
 
-	match role:
+	# All three sub-steps done — carry burger to waiter table.
+	change_state(State.WALK_TO_WAITER_TABLE)
 
-		"cook":
-			# Always possible — raw patties are infinite.
-			change_state(State.WALK_TO_GRILL)
-			# _finish_turn() called after RETURN_TO_IDLE navigation completes.
-
-		"prep":
-			if GameConfig.cooked_patties <= 0:
-				print("ChefFSM (%s): no cooked patties — skipping prep turn" % name)
-				change_state(State.IDLE)
-				_finish_turn()
-			else:
-				change_state(State.WALK_TO_GRILL)
-
-		_:
-			# No role assigned — sit idle this round.
-			change_state(State.IDLE)
-			_finish_turn()
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-func _resolve_node_refs() -> void:
-	if grill_node == null:
-		grill_node = get_tree().get_first_node_in_group("hibatchi_grill") as Node2D
-	if prep_area_node == null:
-		prep_area_node = get_tree().get_first_node_in_group("prep_area") as Node2D
-	if waiter_table_node == null:
-		waiter_table_node = get_tree().get_first_node_in_group("waiter_table") as Node2D
-
-
-func _get_node_or_group(exported_node: Node2D, group: String) -> Node2D:
-	if exported_node != null:
-		return exported_node
-	return get_tree().get_first_node_in_group(group) as Node2D
+## Callback fired by the 5-second cook timer.
+## Transitions the Chef out of the WAIT_COOK (blocked) state.
+func _on_cook_finished() -> void:
+	print("ChefFSM: patty cooked — transitioning to PICKUP_PATTY")
+	change_state(State.PICKUP_PATTY)

@@ -1,154 +1,47 @@
 # =============================================================================
 # game_config.gd
-# AutoLoad name: GameConfig
 # =============================================================================
-# Central store for ALL game state that multiple systems need to read/write.
+# PURPOSE: Central store for settings driven by the OS-game-mechanic menu.
 #
-# OS ANALOGY:
-#   GameConfig is the kernel's process-control-block table — one authoritative
-#   record of every resource (patties, burgers, HP, score) so no two systems
-#   can disagree about what exists.
+# Add to Project ▸ AutoLoad as "GameConfig".
 #
-# KITCHEN PIPELINE (one turn = one round click):
-#   raw patty → [Cook Chef places on grill]
-#             → patties_cooking  (set this turn)
-#             → cooked_patties   (promoted next turn via advance_pipeline())
-#             → [Prep Chef picks up, assembles]
-#             → assembled_burgers (on waiter_table)
-#             → [Waiter picks up, walks to plate]
-#             → Customer fed ✓
+# WHY THIS EXISTS:
+#   Your TODO says "each sprite that populates is impacted by the number
+#   allocated on the OS-game-mechanic menu" for Waiters, Chefs, and Customers.
+#   GameConfig is the single source of truth for those counts so every system
+#   (RoundManager, test runner, spawn logic) reads from one place.
+#
+# USAGE IN YOUR MENU SCENE:
+#   GameConfig.set_npc_counts(chef_count, waiter_count, customer_count)
 # =============================================================================
 
 class_name GameConfigNode
 extends Node
 
 # ---------------------------------------------------------------------------
-# Per-turn NPC role allocations — set by OS menu before every round
+# Default NPC counts (clamped to MIN_COUNT–MAX_COUNT)
 # ---------------------------------------------------------------------------
 
-var chef_cook_count      : int = 0
-var chef_prep_count      : int = 0
-var waiter_plate1_count  : int = 0
-var waiter_plate2_count  : int = 0
-var waiter_plate3_count  : int = 0
+var chef_count     : int = 1
+var waiter_count   : int = 1
+var customer_count : int = 3
+
+const MIN_COUNT : int = 1
+const MAX_COUNT : int = 3
 
 # ---------------------------------------------------------------------------
-# Kitchen pipeline state — persists across turns
+# API
 # ---------------------------------------------------------------------------
 
-## Patties placed on the grill THIS turn — become cooked next turn.
-var patties_cooking   : int = 0
+## Update all three counts at once — called from the OS menu UI on Start Round.
+func set_npc_counts(chefs: int, waiters: int, customers: int) -> void:
+	chef_count     = clamp(chefs,     MIN_COUNT, MAX_COUNT)
+	waiter_count   = clamp(waiters,   MIN_COUNT, MAX_COUNT)
+	customer_count = clamp(customers, MIN_COUNT, MAX_COUNT)
+	print("GameConfig: counts updated — chefs=%d  waiters=%d  customers=%d" \
+		  % [chef_count, waiter_count, customer_count])
 
-## Cooked patties waiting on the grill for a Prep chef to pick up.
-var cooked_patties    : int = 0
 
-## Assembled burgers on the waiter_table, ready for any Waiter to pick up.
-var assembled_burgers : int = 0
-
-# ---------------------------------------------------------------------------
-# Player / game state
-# ---------------------------------------------------------------------------
-
-var player_hp     : int = MAX_HP
-var current_round : int = 0
-var score         : int = 0   # total customers successfully served
-
-const MAX_HP     : int = 3
-const MAX_PLATES : int = 3
-
-# ---------------------------------------------------------------------------
-# Turn allocation API — called by OS menu on Start Round
-# ---------------------------------------------------------------------------
-
-func set_turn_allocations(
-	cooks : int,
-	preps : int,
-	w1    : int,
-	w2    : int,
-	w3    : int
-) -> void:
-	chef_cook_count     = cooks
-	chef_prep_count     = preps
-	waiter_plate1_count = w1
-	waiter_plate2_count = w2
-	waiter_plate3_count = w3
-	print("GameConfig: allocations — cook=%d prep=%d plate1=%d plate2=%d plate3=%d" \
-		  % [cooks, preps, w1, w2, w3])
-
-# ---------------------------------------------------------------------------
-# Pipeline API — called by RoundManager at the start of each NPC turn phase
-# ---------------------------------------------------------------------------
-
-## Promotes last round's cooking patties to cooked status.
-## Called ONCE per round before NPCs execute.
-func advance_pipeline() -> void:
-	cooked_patties  += patties_cooking
-	patties_cooking  = 0
-	print("GameConfig: pipeline advanced — cooked=%d assembled=%d" \
-		  % [cooked_patties, assembled_burgers])
-
-# ---------------------------------------------------------------------------
-# HP / score helpers
-# ---------------------------------------------------------------------------
-
-func deduct_hp(amount: int = 1) -> void:
-	player_hp = maxi(0, player_hp - amount)
-
-func is_game_over() -> bool:
-	return player_hp <= 0
-
-func add_score(amount: int = 1) -> void:
-	score += amount
-
-# ---------------------------------------------------------------------------
-# Plate-node helpers
-# ---------------------------------------------------------------------------
-
-## Returns the plate Node2D for a 1-based index (1, 2, or 3).
-## Plates are sorted alphabetically by node name so the mapping is stable.
-func get_plate_node(index: int) -> Node2D:
-	var tree := get_tree()
-	if tree == null:
-		return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	if plates.is_empty():
-		return null
-	plates.sort_custom(func(a, b): return a.name < b.name)
-	var i := index - 1
-	if i < 0 or i >= plates.size():
-		return null
-	return plates[i] as Node2D
-
-## Returns how many CustomerFSM nodes are currently assigned to a given plate.
-func customers_at_plate(plate: Node2D) -> int:
-	if plate == null:
-		return 0
-	var tree := get_tree()
-	if tree == null:
-		return 0
-	var count := 0
-	for node in tree.get_nodes_in_group("customers"):
-		if node is CustomerFSM and node.assigned_plate == plate:
-			count += 1
-	return count
-
-## Finds the plate with the fewest customers currently assigned.
-func find_least_occupied_plate() -> Node2D:
-	var tree := get_tree()
-	if tree == null:
-		return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	if plates.is_empty():
-		return null
-	plates.sort_custom(func(a, b): return a.name < b.name)
-
-	var best_plate  : Node2D = null
-	var best_count  : int    = 99
-
-	for plate in plates:
-		var c := customers_at_plate(plate as Node2D)
-		if c < best_count:
-			best_count = c
-			best_plate = plate as Node2D
-
-	return best_plate
+func set_chef_count(value: int)     -> void: chef_count     = clamp(value, MIN_COUNT, MAX_COUNT)
+func set_waiter_count(value: int)   -> void: waiter_count   = clamp(value, MIN_COUNT, MAX_COUNT)
+func set_customer_count(value: int) -> void: customer_count = clamp(value, MIN_COUNT, MAX_COUNT)

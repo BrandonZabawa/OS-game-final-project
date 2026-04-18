@@ -1,47 +1,28 @@
 # =============================================================================
 # customer_fsm.gd
 # =============================================================================
-# PURPOSE: Customer NPC with a randomly assigned patience tier that counts
-#          down each round.  Models "processes" in an OS scheduler — some jobs
-#          have a long burst time (HIGH patience) and some are short (LOW).
+# PURPOSE: Controls a Customer NPC that walks to their assigned plate, waits
+#          for food during the round, and reacts to being fed or ignored.
 #
-# PATIENCE TIERS (randomly assigned on spawn):
-#   LOW    — 5 turns  before leaving.  Forces the player to act fast.
-#   MEDIUM — 10 turns before leaving.  Standard pressure.
-#   HIGH   — 30 turns before leaving.  Allows deep pipeline build-up.
-#
-# This randomness maps to the scheduling algorithms on the OS menu:
-#   FIFO  → serve in arrival order regardless of patience.
-#   SJF   → serve LOW patience customers first.
-#   SJCF  → re-route mid-delivery to serve the most urgent (closest to 0).
-#   RR    → every customer gets served equally regardless of patience tier.
-#           This is the core fairness rule: all customers must be fed.
+# OS SCHEDULING ANALOGY:
+#   Customers model "jobs" in the ready-queue waiting for a CPU time slice.
+#   Getting fed = being dispatched. Being unfed = starvation.
 #
 # STATE FLOW:
-#   SPAWNING → WALK_TO_SEAT → IDLE_SEATED → WAITING
-#           → FED (celebrate → LEAVING → queue_free)
-#           → LEAVING (patience expired → queue_free)
+#   SPAWNING -> WALK_TO_SEAT -> IDLE_SEATED -> WAITING
+#            -> FED (celebrate, then LEAVING -> queue_free)
+#            -> LEAVING (unfed exit -> queue_free)
 #
-# PATIENCE LABEL:
-#   A Label node named "PatienceLabel" must be a direct child of this scene.
-#   It displays the remaining turns above the customer's head.
-#   See editor setup instructions in the PR description.
+# STALE-COROUTINE GUARD:
+#   _state_gen is incremented on every change_state() call. Each coroutine
+#   captures `gen = _state_gen` at entry and checks before any post-await
+#   side-effect. A mismatch means the state changed mid-wait — bail silently.
+#   (Same pattern as ChefFSM — prevents ghost transitions from FED/LEAVING
+#   timers firing after the customer has already been freed or re-entered.)
 # =============================================================================
 
 class_name CustomerFSM
 extends BaseFSM
-
-# ---------------------------------------------------------------------------
-# Patience tier enum
-# ---------------------------------------------------------------------------
-
-enum PatienceTier { LOW, MEDIUM, HIGH }
-
-const PATIENCE_TURNS : Dictionary = {
-	PatienceTier.LOW    : 5,
-	PatienceTier.MEDIUM : 10,
-	PatienceTier.HIGH   : 30,
-}
 
 # ---------------------------------------------------------------------------
 # State enum
@@ -60,33 +41,35 @@ enum State {
 # Exports
 # ---------------------------------------------------------------------------
 
-@export var plate_index : int = 1
+@export var plate_index: int = 1
 
 # ---------------------------------------------------------------------------
-# Runtime — set by RoundManager before walk_to_seat()
+# Runtime context (set by RoundManager before walk_to_seat())
 # ---------------------------------------------------------------------------
 
-var assigned_plate : Node2D = null
+var assigned_plate: Node2D = null
 
 # ---------------------------------------------------------------------------
-# Patience system
+# Internal state
 # ---------------------------------------------------------------------------
 
-var patience_tier      : PatienceTier = PatienceTier.MEDIUM
-var turns_remaining    : int          = 10
-var _has_been_fed      : bool         = false
+var _has_been_fed : bool = false
+
+# Stale-coroutine guard — incremented on every state change.
+var _state_gen    : int  = 0
 
 # ---------------------------------------------------------------------------
-# Label (add a Label child named "PatienceLabel" in the Godot editor)
+# Child-node references
 # ---------------------------------------------------------------------------
 
-@onready var patience_label : Label = $PatienceLabel
+@onready var _audio_ding: AudioStreamPlayer2D = $AudioStreamPlayer2D
 
 # ---------------------------------------------------------------------------
-# Child audio
+# Constants
 # ---------------------------------------------------------------------------
 
-@onready var _audio_ding : AudioStreamPlayer2D = $AudioStreamPlayer2D
+const FED_CELEBRATE_DURATION : float = 1.0
+const LEAVING_EXIT_DURATION  : float = 1.5
 
 # ---------------------------------------------------------------------------
 # Signals
@@ -96,10 +79,8 @@ signal customer_fed(customer: CustomerFSM)
 signal customer_timed_out(customer: CustomerFSM)
 
 # ---------------------------------------------------------------------------
-# Stale-coroutine guard
+# Override change_state to track generation
 # ---------------------------------------------------------------------------
-
-var _state_gen : int = 0
 
 func change_state(new_state: int) -> void:
 	_state_gen += 1
@@ -110,29 +91,29 @@ func change_state(new_state: int) -> void:
 # ---------------------------------------------------------------------------
 
 func _on_ready() -> void:
-	_assign_random_patience()
 	_has_been_fed = false
-	_update_label()
 	change_state(State.SPAWNING)
 
 
 func _on_state_enter(state: int) -> void:
-	var gen := _state_gen
+	var gen := _state_gen  # capture generation for stale-guard checks below
 
 	match state:
 
 		State.SPAWNING:
 			play_anim("idle")
+			# Waits here until RoundManager calls walk_to_seat().
 
 		State.WALK_TO_SEAT:
 			play_anim("walk")
 			if assigned_plate:
 				move_to(assigned_plate.global_position)
 			else:
-				push_error("CustomerFSM (%s): assigned_plate is null!" % name)
+				push_error("CustomerFSM: assigned_plate not set before walk_to_seat()")
 
 		State.IDLE_SEATED:
 			play_anim("idle")
+			# Seated and calm — waits for RoundManager.start_waiting().
 
 		State.WAITING:
 			play_anim("waiting")
@@ -141,17 +122,19 @@ func _on_state_enter(state: int) -> void:
 		State.FED:
 			_has_been_fed = true
 			play_anim("happy")
-			if _audio_ding and is_instance_valid(_audio_ding):
+			if _audio_ding:
 				_audio_ding.play()
 			customer_fed.emit(self)
-			await get_tree().create_timer(1.0).timeout
-			if _state_gen != gen: return
+			await get_tree().create_timer(FED_CELEBRATE_DURATION).timeout
+			if _state_gen != gen:
+				return  # state changed during celebration — don't double-transition
 			change_state(State.LEAVING)
 
 		State.LEAVING:
 			play_anim("walk")
-			await get_tree().create_timer(1.5).timeout
-			if _state_gen != gen: return
+			await get_tree().create_timer(LEAVING_EXIT_DURATION).timeout
+			if _state_gen != gen:
+				return  # already freed or re-entered — don't call queue_free twice
 			queue_free()
 
 
@@ -162,86 +145,36 @@ func _process_state(_delta: float) -> void:
 				change_state(State.IDLE_SEATED)
 
 # ---------------------------------------------------------------------------
-# Public API — called by RoundManager
+# Public API
 # ---------------------------------------------------------------------------
 
-## Called when the round timer starts to set this customer into the hungry state.
 func start_waiting() -> void:
 	if current_state == State.IDLE_SEATED:
 		change_state(State.WAITING)
 	else:
-		push_warning("CustomerFSM (%s): start_waiting() called before seated (state=%d)" \
-					 % [name, current_state])
+		push_warning("CustomerFSM: start_waiting() called before seated (state=%d)" % current_state)
 
 
-## Called by WaiterFSM on successful delivery.
 func receive_meal() -> void:
 	if current_state == State.WAITING:
 		change_state(State.FED)
 	else:
-		push_warning("CustomerFSM (%s): receive_meal() called outside WAITING (state=%d)" \
-					 % [name, current_state])
+		push_warning("CustomerFSM: receive_meal() called outside WAITING (state=%d)" % current_state)
 
 
-## Called by RoundManager at end of each round to decrement patience.
-## Returns true if the customer expired (patience hit 0), false otherwise.
-func tick_patience() -> bool:
-	if current_state != State.WAITING:
-		return false   # Already fed or leaving — no penalty
-
-	turns_remaining -= 1
-	_update_label()
-	print("CustomerFSM (%s): %d turns remaining" % [name, turns_remaining])
-
-	if turns_remaining <= 0:
+func check_fed_status() -> bool:
+	if not _has_been_fed and current_state == State.WAITING:
 		customer_timed_out.emit(self)
 		change_state(State.LEAVING)
-		return true
+		return false
+	return true
 
-	return false
 
-
-## Assigns a plate and begins walking to it.
 func walk_to_seat() -> void:
 	change_state(State.WALK_TO_SEAT)
 
 
 func is_seated() -> bool:
-	return current_state in [State.IDLE_SEATED, State.WAITING, State.FED]
-
-
-func is_fed() -> bool:
-	return _has_been_fed
-
-# ---------------------------------------------------------------------------
-# Private helpers
-# ---------------------------------------------------------------------------
-
-func _assign_random_patience() -> void:
-	var roll := randi() % 3
-	match roll:
-		0:
-			patience_tier   = PatienceTier.LOW
-			turns_remaining = PATIENCE_TURNS[PatienceTier.LOW]
-		1:
-			patience_tier   = PatienceTier.MEDIUM
-			turns_remaining = PATIENCE_TURNS[PatienceTier.MEDIUM]
-		_:
-			patience_tier   = PatienceTier.HIGH
-			turns_remaining = PATIENCE_TURNS[PatienceTier.HIGH]
-	print("CustomerFSM (%s): patience tier=%s turns=%d" \
-		  % [name, PatienceTier.keys()[patience_tier], turns_remaining])
-
-
-func _update_label() -> void:
-	if patience_label == null:
-		return
-	patience_label.text = str(turns_remaining)
-
-	# Color-code by urgency so the player can read pressure at a glance.
-	if turns_remaining <= 3:
-		patience_label.add_theme_color_override("font_color", Color.RED)
-	elif turns_remaining <= 7:
-		patience_label.add_theme_color_override("font_color", Color.YELLOW)
-	else:
-		patience_label.add_theme_color_override("font_color", Color.WHITE)
+	return current_state == State.IDLE_SEATED or \
+		   current_state == State.WAITING or \
+		   current_state == State.FED
