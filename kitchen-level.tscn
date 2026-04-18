@@ -15459,13 +15459,13 @@ tile_set = SubResource("TileSet_k25mb")
 position = Vector2(143, -117)
 
 [node name="chef" parent="Characters" unique_id=1475929152 instance=ExtResource("6_wrif2")]
-position = Vector2(-124, -85)
+position = Vector2(-122, -81)
 
 [node name="chef2" parent="Characters" unique_id=1280216333 instance=ExtResource("6_wrif2")]
-position = Vector2(-62, -88)
+position = Vector2(-63, -83)
 
 [node name="chef3" parent="Characters" unique_id=1901022980 instance=ExtResource("6_wrif2")]
-position = Vector2(-92, -87)
+position = Vector2(-93, -84)
 
 [node name="customer" parent="Characters" unique_id=1816802054 instance=ExtResource("7_wrif2")]
 position = Vector2(123, 111)
