@@ -15448,7 +15448,7 @@ tile_set = SubResource("TileSet_wrif2")
 
 [node name="waiter-side-table" type="TileMapLayer" parent="Environment" unique_id=1152948029 groups=["waiter_table"]]
 position = Vector2(-1, 0)
-tile_map_data = PackedByteArray("AAD3//z/AAAAAAEAAAD3//3/AAAAAAIAAAD3//7/AAAAAAMAAAD4//z/AAABAAEAAAD4//3/AAABAAIAAAD4//7/AAABAAMAAAD3//v/AAAAAAAAAAD4//v/AAABAAAAAAD5//v/AAACAAAAAAD5//z/AAACAAEAAAD5//3/AAACAAIAAAD5//7/AAACAAMAAAD6//v/AAADAAAAAAD6//z/AAADAAEAAAD6//3/AAADAAIAAAD6//7/AAADAAMAAAD7//v/AAAEAAAAAAD7//z/AAAEAAEAAAD7//3/AAAEAAIAAAD7//7/AAAEAAMAAAD8//v/AAAFAAAAAAD8//z/AAAFAAEAAAD8//3/AAAFAAIAAAD8//7/AAAFAAMAAAD9//v/AAAGAAAAAAD9//z/AAAGAAEAAAD9//3/AAAGAAIAAAD9//7/AAAGAAMAAAD+//v/AAAHAAAAAAD+//z/AAAHAAEAAAD+//3/AAAHAAIAAAD+//7/AAAHAAMAAAD///v/AAAIAAAAAAD///z/AAAIAAEAAAD///3/AAAIAAIAAAD///7/AAAIAAMAAAAAAPv/AAAAAAAAAAAAAPz/AAAAAAEAAAAAAP3/AAAAAAIAAAAAAP7/AAAAAAMAAAABAPv/AAABAAAAAAABAPz/AAABAAEAAAABAP3/AAABAAIAAAABAP7/AAABAAMAAAACAPv/AAACAAAAAAACAPz/AAACAAEAAAACAP3/AAACAAIAAAACAP7/AAACAAMAAAADAPv/AAADAAAAAAADAPz/AAADAAEAAAADAP3/AAADAAIAAAADAP7/AAADAAMAAAAEAPv/AAAEAAAAAAAEAPz/AAAEAAEAAAAEAP3/AAAEAAIAAAAEAP7/AAAEAAMAAAAFAPv/AAAFAAAAAAAFAPz/AAAFAAEAAAAFAP3/AAAFAAIAAAAFAP7/AAAFAAMAAAAGAPv/AAAGAAAAAAAGAPz/AAAGAAEAAAAGAP3/AAAGAAIAAAAGAP7/AAAGAAMAAAAHAPv/AAAHAAAAAAAHAPz/AAAHAAEAAAAHAP3/AAAHAAIAAAAHAP7/AAAHAAMAAAAIAPv/AAAIAAAAAAAIAPz/AAAIAAEAAAAIAP3/AAAIAAIAAAAIAP7/AAAIAAMAAAA=")
+tile_map_data = PackedByteArray("AAD3//z/AAAAAAEAAAD3//3/AAAAAAIAAAD3//7/AAAAAAMAAAD4//z/AAABAAEAAAD4//3/AAABAAIAAAD4//7/AAABAAMAAAD3//v/AAAAAAAAAAD4//v/AAABAAAAAAD5//v/AAACAAAAAAD5//z/AAACAAEAAAD5//3/AAACAAIAAAD5//7/AAACAAMAAAD6//v/AAADAAAAAAD6//z/AAADAAEAAAD6//3/AAADAAIAAAD6//7/AAADAAMAAAD7//v/AAAEAAAAAAD7//z/AAAEAAEAAAD7//3/AAAEAAIAAAD7//7/AAAEAAMAAAD8//v/AAAFAAAAAAD8//z/AAAFAAEAAAD8//3/AAAFAAIAAAD8//7/AAAFAAMAAAD9//v/AAAGAAAAAAD9//z/AAAGAAEAAAD9//3/AAAGAAIAAAD9//7/AAAGAAMAAAD+//v/AAAHAAAAAAD+//z/AAAHAAEAAAD+//3/AAAHAAIAAAD+//7/AAAHAAMAAAD///v/AAAIAAAAAAD///z/AAAIAAEAAAD///3/AAAIAAIAAAD///7/AAAIAAMAAAAAAPv/AAAAAAAAAAAAAPz/AAAAAAEAAAAAAP3/AAAAAAIAAAAAAP7/AAAAAAMAAAABAPv/AAABAAAAAAABAPz/AAABAAEAAAABAP3/AAABAAIAAAABAP7/AAABAAMAAAACAPv/AAACAAAAAAACAPz/AAACAAEAAAACAP3/AAACAAIAAAACAP7/AAACAAMAAAADAPv/AAADAAAAAAADAPz/AAADAAEAAAADAP3/AAADAAIAAAADAP7/AAADAAMAAAAEAPv/AAAEAAAAAAAEAPz/AAAEAAEAAAAEAP3/AAAEAAIAAAAEAP7/AAAEAAMAAAAFAPv/AAAFAAAAAAAFAPz/AAAFAAEAAAAFAP3/AAAFAAIAAAAFAP7/AAAFAAMAAAAGAPv/AAAGAAAAAAAGAPz/AAAGAAEAAAAGAP3/AAAGAAIAAAAGAP7/AAAGAAMAAAAHAPv/AAAHAAAAAAAHAPz/AAAHAAEAAAAHAP3/AAAHAAIAAAAHAP7/AAAHAAMAAAAIAPv/AAAIAAAAAAAIAPz/AAAIAAEAAAAIAP3/AAAIAAIAAAAIAP7/AAAIAAMAAAD8/wIAAAAPAB4AAAD8/wMAAAAPAB8AAAD8/wQAAAAPACAAAAD8/wUAAAAPACEAAAD9/wIAAAAQAB4AAAD9/wMAAAAQAB8AAAD9/wQAAAAQACAAAAD9/wUAAAAQACEAAAD+/wIAAAARAB4AAAD+/wMAAAARAB8AAAD+/wQAAAARACAAAAD+/wUAAAARACEAAAD//wIAAAASAB4AAAD//wMAAAASAB8AAAD//wQAAAASACAAAAD//wUAAAASACEAAAAAAAIAAAATAB4AAAAAAAMAAAATAB8AAAAAAAQAAAATACAAAAAAAAUAAAATACEAAAABAAIAAAAUAB4AAAABAAMAAAAUAB8AAAABAAQAAAAUACAAAAABAAUAAAAUACEAAAACAAIAAAAVAB4AAAACAAMAAAAVAB8AAAACAAQAAAAVACAAAAACAAUAAAAVACEAAAADAAIAAAAWAB4AAAADAAMAAAAWAB8AAAADAAQAAAAWACAAAAADAAUAAAAWACEAAAAEAAIAAAAXAB4AAAAEAAMAAAAXAB8AAAAEAAQAAAAXACAAAAAEAAUAAAAXACEAAAA=")
 tile_set = SubResource("TileSet_buwsd")
 
 [node name="chef-prep-table-2" type="TileMapLayer" parent="Environment" unique_id=1782356353]
@@ -15459,43 +15459,92 @@ tile_set = SubResource("TileSet_k25mb")
 position = Vector2(143, -117)
 
 [node name="chef" parent="Characters" unique_id=1475929152 instance=ExtResource("6_wrif2")]
-position = Vector2(-125, -84)
+position = Vector2(-85, -80)
 
 [node name="chef2" parent="Characters" unique_id=1280216333 instance=ExtResource("6_wrif2")]
-position = Vector2(-95, -84)
+position = Vector2(109, -80)
 
 [node name="chef3" parent="Characters" unique_id=1901022980 instance=ExtResource("6_wrif2")]
-position = Vector2(-65, -83)
+position = Vector2(63, -81)
+
+[node name="chef4" parent="Characters" unique_id=1363340807 instance=ExtResource("6_wrif2")]
+position = Vector2(21, -85)
+
+[node name="chef5" parent="Characters" unique_id=993555011 instance=ExtResource("6_wrif2")]
+top_level = true
+position = Vector2(429, 132)
+
+[node name="chef6" parent="Characters" unique_id=671505281 instance=ExtResource("6_wrif2")]
+position = Vector2(-16, -83)
+
+[node name="chef7" parent="Characters" unique_id=787036975 instance=ExtResource("6_wrif2")]
+position = Vector2(-47, -83)
 
 [node name="customer" parent="Characters" unique_id=1816802054 instance=ExtResource("7_wrif2")]
-position = Vector2(-80, 22)
+position = Vector2(123, 111)
 
 [node name="customer2" parent="Characters" unique_id=1569100712 instance=ExtResource("7_wrif2")]
-position = Vector2(-3, 22)
+position = Vector2(102, 113)
 
 [node name="customer3" parent="Characters" unique_id=1557624520 instance=ExtResource("7_wrif2")]
-position = Vector2(69, 21)
+position = Vector2(82, 113)
+
+[node name="customer4" parent="Characters" unique_id=2088688028 instance=ExtResource("7_wrif2")]
+position = Vector2(61, 113)
+
+[node name="customer5" parent="Characters" unique_id=324504468 instance=ExtResource("7_wrif2")]
+position = Vector2(33, 110)
+
+[node name="customer6" parent="Characters" unique_id=1221471501 instance=ExtResource("7_wrif2")]
+position = Vector2(8, 110)
+
+[node name="customer7" parent="Characters" unique_id=1326294086 instance=ExtResource("7_wrif2")]
+position = Vector2(-98, 110)
 
 [node name="WaiterNPC" parent="Characters" unique_id=171770866 instance=ExtResource("8_xk85h")]
-position = Vector2(42, -79)
+position = Vector2(-38, -3)
 
 [node name="WaiterNPC2" parent="Characters" unique_id=1266700237 instance=ExtResource("8_xk85h")]
-position = Vector2(66, -79)
+position = Vector2(-89, -3)
 
 [node name="WaiterNPC3" parent="Characters" unique_id=397291221 instance=ExtResource("8_xk85h")]
-position = Vector2(89, -79)
+position = Vector2(-63, -3)
+
+[node name="WaiterNPC4" parent="Characters" unique_id=837416820 instance=ExtResource("8_xk85h")]
+position = Vector2(-119, -4)
+
+[node name="WaiterNPC5" parent="Characters" unique_id=422950283 instance=ExtResource("8_xk85h")]
+position = Vector2(-90, 21)
+
+[node name="WaiterNPC6" parent="Characters" unique_id=874093577 instance=ExtResource("8_xk85h")]
+position = Vector2(-120, 21)
+
+[node name="WaiterNPC7" parent="Characters" unique_id=1801641317 instance=ExtResource("8_xk85h")]
+position = Vector2(-64, 21)
 
 [node name="FoodItems" type="Node2D" parent="." unique_id=212872155]
 position = Vector2(143, -117)
 
 [node name="plate" parent="FoodItems" unique_id=1883803842 instance=ExtResource("8_buwsd")]
-position = Vector2(-31, -102)
+position = Vector2(-1, 2)
 
 [node name="plate2" parent="FoodItems" unique_id=205616902 instance=ExtResource("8_buwsd")]
-position = Vector2(45, -102)
+position = Vector2(110, 3)
 
 [node name="plate3" parent="FoodItems" unique_id=815580278 instance=ExtResource("8_buwsd")]
-position = Vector2(115, -103)
+position = Vector2(80, 16)
+
+[node name="plate4" parent="FoodItems" unique_id=1861470333 instance=ExtResource("8_buwsd")]
+position = Vector2(79, -7)
+
+[node name="plate5" parent="FoodItems" unique_id=179531714 instance=ExtResource("8_buwsd")]
+position = Vector2(53, -8)
+
+[node name="plate6" parent="FoodItems" unique_id=1502794899 instance=ExtResource("8_buwsd")]
+position = Vector2(24, 15)
+
+[node name="plate7" parent="FoodItems" unique_id=1151980685 instance=ExtResource("8_buwsd")]
+position = Vector2(25, -8)
 
 [node name="raw-patty" parent="FoodItems" unique_id=829529583 instance=ExtResource("9_kho2p")]
 position = Vector2(-59, -17)

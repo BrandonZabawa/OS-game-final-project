@@ -296,10 +296,10 @@ func _on_start_round_pressed() -> void:
 	)
 
 	# Kick off the next round in the OS kernel.
-	RoundManager.start_next_round()
+	RoundManagerNode.new().start_next_round()
 
 	# Sync the round counter display with what RoundManager reports.
-	_round_num = RoundManager.get_current_round()
+	_round_num = RoundManagerNode.new().get_current_round()
 	round_label.text = "ROUND %02d" % _round_num
 
 	# Reflect any stamina cost from the chosen algorithm.

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr create --title 'Fix null get_tree\\(\\) crashes, stale-coroutine ghost transitions, and group-query self-contamination' --body ' *)",
+      "Bash(where gh *)",
+      "Bash(winget list *)",
+      "Bash(cmd //c \"where gh\")"
+    ]
+  }
+}

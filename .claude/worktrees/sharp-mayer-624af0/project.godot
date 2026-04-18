@@ -15,10 +15,6 @@ run/main_scene="uid://dkrg11bc2fu7d"
 config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
-[autoload]
-
-RoundManager="*uid://by2wi7kfel2gc"
-
 [editor]
 
 version_control/autoload_on_startup=true
