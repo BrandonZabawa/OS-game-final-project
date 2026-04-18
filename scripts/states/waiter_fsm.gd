@@ -42,7 +42,8 @@ enum State {
 
 ## The waiter-side table Node2D where Chefs leave finished burgers.
 ## Must be the SAME node referenced by ChefFSM.waiter_table_node.
-@export var waiter_table_node: Node2D
+#@export var waiter_table_node: Node2D
+var waiter_table_node
 
 ## World position the Waiter returns to between deliveries.
 @export var idle_position: Vector2 = Vector2.ZERO
@@ -78,6 +79,7 @@ signal burger_delivered(waiter: WaiterFSM, plate: Node2D)
 # ---------------------------------------------------------------------------
 
 func _on_ready() -> void:
+	waiter_table_node = get_tree().get_first_node_in_group("raw_patty")
 	change_state(State.IDLE)
 
 func _on_state_enter(state: int) -> void:
@@ -103,7 +105,8 @@ func _on_state_enter(state: int) -> void:
 		State.WALK_TO_PLATE:
 			play_anim("walk")
 			if target_plate:
-				move_to(target_plate.global_position)
+				#move_to(target_plate.global_position)
+				move_to(waiter_table_node.global_position)
 			else:
 				# Safety fallback — no plate assigned, return to idle.
 				push_warning("WaiterFSM: target_plate is null, returning to idle")
@@ -120,7 +123,8 @@ func _on_state_enter(state: int) -> void:
 
 		State.RETURN_TO_IDLE:
 			play_anim("walk")
-			move_to(idle_position)
+			#move_to(idle_position)
+			move_to(waiter_table_node.global_position)
 			# Clear delivery context so stale references don't persist.
 			target_plate    = null
 			target_customer = null
@@ -159,3 +163,7 @@ func assign_delivery(plate: Node2D, customer: CustomerFSM) -> void:
 ## Returns true when the Waiter is free to take a new delivery.
 func is_available() -> bool:
 	return current_state == State.IDLE
+
+
+func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
+	pass # Replace with function body.

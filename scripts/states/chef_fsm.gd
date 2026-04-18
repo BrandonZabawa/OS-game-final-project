@@ -49,8 +49,8 @@ enum State {
 # ---------------------------------------------------------------------------
 
 ## The hibachi grill Node2D — Chef walks here to cook patties.
-@export var grill_node:        Node2D
-
+#@export var grill_node:        Node2D
+var grill_node #= get_tree().get_first_node_in_group("hibatchi_grill")
 ## Counter/prep area Node2D — Chef walks here to assemble the burger.
 @export var prep_area_node:    Node2D
 
@@ -99,6 +99,8 @@ signal burger_ready(chef: ChefFSM)
 
 func _on_ready() -> void:
 	# Build cook timer in code — avoids requiring a Timer node in the scene.
+	#grill_node = get_node("/root/KitchenLevel")
+	grill_node = get_tree().get_first_node_in_group("hibatchi_grill")
 	_cook_timer             = Timer.new()
 	_cook_timer.one_shot    = true
 	_cook_timer.wait_time   = COOK_TIME
@@ -222,3 +224,7 @@ func _run_assembly_sequence() -> void:
 func _on_cook_finished() -> void:
 	print("ChefFSM: patty cooked — transitioning to PICKUP_PATTY")
 	change_state(State.PICKUP_PATTY)
+
+
+func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
+	pass # Replace with function body.
