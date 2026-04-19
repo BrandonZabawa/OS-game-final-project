@@ -38,6 +38,9 @@ plates=""
 waiter_table=""
 death_sound=""
 hibatchi_grill=""
+plate1=""
+plate2=""
+plate3=""
 
 [input]
 

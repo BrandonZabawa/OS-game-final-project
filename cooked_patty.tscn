@@ -1,9 +1,9 @@
-[gd_scene format=3 uid="uid://8yfbhng7weh4"]
+[gd_scene format=3 uid="uid://d2gn4yx8pet5q"]
 
-[ext_resource type="Texture2D" uid="uid://i7tue07dmoqg" path="res://my_character_assets/sprites/kitchen/House & Resto Tileset/H&R VX Ace/B-C-D-E H&R 3.png" id="1_nhk8q"]
+[ext_resource type="Texture2D" uid="uid://dt25yf12cwcle" path="res://my_character_assets/sprites/kitchen/House & Resto Tileset/H&R VX Ace/B-C-D-E H&R 3 No Shadows.png" id="1_47lbk"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qxg11"]
-texture = ExtResource("1_nhk8q")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_tygnb"]
+texture = ExtResource("1_47lbk")
 16:0/0 = 0
 17:0/0 = 0
 18:0/0 = 0
@@ -671,12 +671,11 @@ texture = ExtResource("1_nhk8q")
 14:31/0 = 0
 15:31/0 = 0
 
-[sub_resource type="TileSet" id="TileSet_egklv"]
-sources/0 = SubResource("TileSetAtlasSource_qxg11")
+[sub_resource type="TileSet" id="TileSet_0m1xb"]
+sources/0 = SubResource("TileSetAtlasSource_tygnb")
 
-[node name="raw-patty" type="Node2D" unique_id=829529583]
+[node name="cooked_patty" type="Node2D" unique_id=2127522424]
 
-[node name="raw-patty-sprite" type="TileMapLayer" parent="." unique_id=1482010601]
-tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 19, 0, 0, 0)
-tile_set = SubResource("TileSet_egklv")
-collision_enabled = false
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=433756752]
+tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 19, 0, 0, 0)
+tile_set = SubResource("TileSet_0m1xb")
