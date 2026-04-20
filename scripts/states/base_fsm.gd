@@ -14,23 +14,16 @@
 class_name BaseFSM
 extends CharacterBody2D
 
-# ---------------------------------------------------------------------------
-# Signals
-# ---------------------------------------------------------------------------
-
 signal state_changed(old_state: int, new_state: int)
 signal destination_reached()
 signal turn_complete(npc: BaseFSM)
 
-# ---------------------------------------------------------------------------
-# Exported configuration
-# ---------------------------------------------------------------------------
-
 @export var move_speed: float = 100.0
 
-# ---------------------------------------------------------------------------
-# Child-node references
-# ---------------------------------------------------------------------------
+# NavigationAgent2D kept for scene compatibility but NOT used for pathfinding.
+# Direct movement is used instead so no baked navmesh is required.
+@onready var nav_agent   : NavigationAgent2D = $NavigationAgent2D if has_node("NavigationAgent2D") else null
+@onready var anim_sprite : AnimatedSprite2D  = $AnimatedSprite2D  if has_node("AnimatedSprite2D")  else null
 
 # NavigationAgent2D kept for scene compatibility but NOT used for pathfinding.
 # Direct movement is used instead so no baked navmesh is required.
@@ -66,6 +59,10 @@ func _ready() -> void:
 	_on_ready()
 
 func _physics_process(delta: float) -> void:
+	#print("_is_moving: ", _is_moving, "\n")
+	#print("Arrival state: ", _arrival_state, "\n")
+	#print("_finish_on_arrival: ", _finish_on_arrival, "\n")
+	#print("delta: ", delta, "\n")
 	if _is_moving:
 		_process_navigation()
 
@@ -81,7 +78,6 @@ func _physics_process(delta: float) -> void:
 		if finish:
 			call_deferred("_finish_turn")
 		return
-
 	_process_state(delta)
 
 # ---------------------------------------------------------------------------
@@ -96,10 +92,6 @@ func _process_state(_delta: float) -> void:
 
 func _on_state_enter(_state: int) -> void:
 	pass
-
-# ---------------------------------------------------------------------------
-# Turn-based execution
-# ---------------------------------------------------------------------------
 
 func execute_turn(role: String) -> void:
 	if is_turn_active:
@@ -122,9 +114,8 @@ func _finish_turn() -> void:
 func _deferred_turn_complete() -> void:
 	turn_complete.emit(self)
 
-# ---------------------------------------------------------------------------
-# State machine API
-# ---------------------------------------------------------------------------
+func _deferred_turn_complete() -> void:
+	turn_complete.emit(self)
 
 func change_state(new_state: int) -> void:
 	if new_state == current_state:
@@ -133,10 +124,6 @@ func change_state(new_state: int) -> void:
 	current_state  = new_state
 	state_changed.emit(previous_state, current_state)
 	_on_state_enter(new_state)
-
-# ---------------------------------------------------------------------------
-# Navigation API
-# ---------------------------------------------------------------------------
 
 func move_to(target_pos: Vector2) -> void:
 	_move_target = target_pos
@@ -153,6 +140,7 @@ func move_to_idle(target_pos: Vector2, idle_state: int) -> void:
 func has_reached_target() -> bool:
 	return global_position.distance_to(_move_target) <= ARRIVAL_THRESHOLD
 
+#TODO: look at _process_navigation() below and tweak it. This could be the reason the pathfinding is off (wrong)
 func _process_navigation() -> void:
 	var diff : Vector2 = _move_target - global_position
 	var dist : float   = diff.length()
@@ -167,9 +155,8 @@ func _process_navigation() -> void:
 	velocity = diff.normalized() * move_speed
 	move_and_slide()
 
-# ---------------------------------------------------------------------------
-# Animation helper
-# ---------------------------------------------------------------------------
+	velocity = diff.normalized() * move_speed
+	move_and_slide()
 
 func play_anim(anim_name: String) -> void:
 	if anim_sprite == null:

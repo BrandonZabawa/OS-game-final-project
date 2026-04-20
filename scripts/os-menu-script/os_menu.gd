@@ -273,49 +273,49 @@ func refresh_status_queue() -> void:
 	if tree == null:
 		return
 
-	# ── Chefs ─────────────────────────────────────────────────────────────
-	var chefs : Array = tree.get_nodes_in_group("chefs")
-	chefs.sort_custom(func(a, b): return a.name < b.name)
-
-	for i in range(_chef_status_labels.size()):
-		var lbl    := _chef_status_labels[i]
-		var status := "Available"
-		var color  := C_ACCENT
-
-		if i < chefs.size():
-			var chef := chefs[i] as ChefFSM
-			if chef == null or not is_instance_valid(chef):
-				status = "—"
-				color  = C_MUTED
-			elif chef.is_turn_active:
-				match chef.current_role:
-					"cook":
-						status = "Cooking"
-						color  = C_WARN
-					"prep":
-						status = "Prepping"
-						color  = C_WARN
-					_:
-						status = "Busy"
-						color  = C_WARN
-			else:
-				# Between rounds — show what role they last performed
-				match chef.current_role:
-					"cook":
-						status = "Cook ✓"
-						color  = C_MUTED
-					"prep":
-						status = "Prep ✓"
-						color  = C_MUTED
-					_:
-						status = "Available"
-						color  = C_ACCENT
-		else:
-			status = "—"
-			color  = C_MUTED
-
-		lbl.text = status
-		lbl.add_theme_color_override("font_color", color)
+	## ── Chefs ─────────────────────────────────────────────────────────────
+	#var chefs : Array = tree.get_nodes_in_group("chefs")
+	#chefs.sort_custom(func(a, b): return a.name < b.name)
+#
+	#for i in range(_chef_status_labels.size()):
+		#var lbl    := _chef_status_labels[i]
+		#var status := "Available"
+		#var color  := C_ACCENT
+#
+		#if i < chefs.size():
+			#var chef := chefs[i] as ChefFSM
+			#if chef == null or not is_instance_valid(chef):
+				#status = "—"
+				#color  = C_MUTED
+			#elif chef.is_turn_active:
+				#match chef.current_role:
+					#"cook":
+						#status = "Cooking"
+						#color  = C_WARN
+					#"prep":
+						#status = "Prepping"
+						#color  = C_WARN
+					#_:
+						#status = "Busy"
+						#color  = C_WARN
+			#else:
+				## Between rounds — show what role they last performed
+				#match chef.current_role:
+					#"cook":
+						#status = "Cook ✓"
+						#color  = C_MUTED
+					#"prep":
+						#status = "Prep ✓"
+						#color  = C_MUTED
+					#_:
+						#status = "Available"
+						#color  = C_ACCENT
+		#else:
+			#status = "—"
+			#color  = C_MUTED
+#
+		#lbl.text = status
+		#lbl.add_theme_color_override("font_color", color)
 
 	# ── Waiters ───────────────────────────────────────────────────────────
 	var waiters : Array = tree.get_nodes_in_group("waiters")
@@ -369,6 +369,7 @@ func _refresh_display() -> void:
 		_:    hp_color = C_DANGER
 	hp_label.add_theme_color_override("font_color", hp_color)
 
+# Explain what this line of code is/does below me (373) bc its confusing and I never seen it b4
 	var any_alloc := (cook_spin.value + prep_spin.value
 		+ plate1_spin.value + plate2_spin.value + plate3_spin.value) > 0
 	start_btn.disabled = not any_alloc or RoundManager.is_round_active()
