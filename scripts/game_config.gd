@@ -2,6 +2,17 @@
 # game_config.gd
 # AutoLoad name: GameConfig
 # =============================================================================
+# Central store for ALL game state that multiple systems need to read/write.
+#
+# KITCHEN PIPELINE (one turn = one round click):
+#   raw patty → [Cook Chef places on grill]
+#             → patties_cooking  (set this turn)
+#             → cooked_patties   (promoted next turn via advance_pipeline())
+#             → [Prep Chef picks up, assembles]
+#             → assembled_burgers (on waiter_table)
+#             → [Waiter picks up, walks to plate]
+#             → Customer fed ✓
+# =============================================================================
 
 class_name GameConfigNode
 extends Node
@@ -23,13 +34,7 @@ var score         : int = 0
 const MAX_HP     : int = 3
 const MAX_PLATES : int = 3
 
-func set_turn_allocations(
-	cooks : int,
-	preps : int,
-	w1    : int,
-	w2    : int,
-	w3    : int
-) -> void:
+func set_turn_allocations(cooks: int, preps: int, w1: int, w2: int, w3: int) -> void:
 	chef_cook_count     = cooks
 	chef_prep_count     = preps
 	waiter_plate1_count = w1
@@ -41,6 +46,8 @@ func set_turn_allocations(
 func advance_pipeline() -> void:
 	cooked_patties  += patties_cooking
 	patties_cooking  = 0
+	print("GameConfig: pipeline advanced — cooked=%d assembled=%d" \
+		  % [cooked_patties, assembled_burgers])
 
 func deduct_hp(amount: int = 1) -> void:
 	player_hp = maxi(0, player_hp - amount)
@@ -51,15 +58,16 @@ func is_game_over() -> bool:
 func add_score(amount: int = 1) -> void:
 	score += amount
 
+## Returns the plate Node2D for a 1-based index (1, 2, or 3).
+## Each plate must belong to its own unique group: "plate1", "plate2", "plate3".
 func get_plate_node(index: int) -> Node2D:
 	var tree := get_tree()
 	if tree == null:
 		return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	for plate in plates:
-		if plate.name == "plate%d" % index:
-			return plate as Node2D
-	return null
+	if index < 1 or index > MAX_PLATES:
+		return null
+	var node := tree.get_first_node_in_group("plate%d" % index)
+	return node as Node2D
 
 func customers_at_plate(plate: Node2D) -> int:
 	if plate == null:
@@ -69,29 +77,21 @@ func customers_at_plate(plate: Node2D) -> int:
 		return 0
 	var count := 0
 	for node in tree.get_nodes_in_group("customers"):
-		if node is CustomerFSM:
-			var c := node as CustomerFSM
-			if c.assigned_plate == plate \
-			and c.current_state not in [CustomerFSM.State.FED, CustomerFSM.State.LEAVING]:
-				count += 1
+		if node is CustomerFSM and node.assigned_plate == plate:
+			count += 1
 	return count
 
-# TODO: Check find_least_occupied_plate() if its causing bug with waiterfsm and customerfsm when using os-mech script
 func find_least_occupied_plate() -> Node2D:
-	var tree := get_tree()
-	if tree == null:
-		return null # TODO: find out why execution did not stop at null when it called return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	if plates.is_empty():
-		return null
-
 	var best_plate : Node2D = null
-	var best_count : int    = 99 #TODO: find out why this value is rediculously high and for what purpose
+	var best_count : int    = 99
 
-	for plate in plates:
-		var c := customers_at_plate(plate as Node2D)
+	for i in range(1, MAX_PLATES + 1):
+		var plate := get_plate_node(i)
+		if plate == null:
+			continue
+		var c := customers_at_plate(plate)
 		if c < best_count:
 			best_count = c
-			best_plate = plate as Node2D
+			best_plate = plate
 
 	return best_plate

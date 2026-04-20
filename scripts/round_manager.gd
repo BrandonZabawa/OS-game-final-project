@@ -1,8 +1,3 @@
-# =============================================================================
-# round_manager.gd
-# AutoLoad name: RoundManager
-# =============================================================================
-
 class_name RoundManagerNode
 extends Node
 
@@ -18,10 +13,9 @@ const GROUP_WAITERS   : String = "waiters"
 const GROUP_CUSTOMERS : String = "customers"
 const GROUP_PLATES    : String = "plates"
 const GROUP_DEATH_SFX : String = "death_sound"
-const MAX_PLATES      : int    = 3
 
-const SEAT_WAIT_LIMIT_MS  : int = 8000
-const PHASE2_TIMEOUT_MS   : int = 15000
+const SPAWN_INTERVAL : int = 3
+const MAX_PLATES     : int = 3
 
 var _turns_remaining : int  = 0
 var _round_active    : bool = false
@@ -39,10 +33,9 @@ func start_game() -> void:
 
 	await get_tree().physics_frame
 
+	_spawn_customer_batch()
 	_register_existing_customers()
-
-	print("RoundManager: game started — waiting for player allocation")
-
+	print("RoundManager: game started")
 
 func execute_round(
 	chef_cook  : int,
@@ -52,7 +45,7 @@ func execute_round(
 	waiter_p3  : int
 ) -> void:
 	if _round_active:
-		push_warning("RoundManager: execute_round() called while round already active")
+		push_warning("RoundManager: execute_round() called while already active")
 		return
 
 	_round_active            = true
@@ -62,53 +55,60 @@ func execute_round(
 	print("RoundManager: === Round %d starting ===" % round_num)
 
 	GameConfig.set_turn_allocations(chef_cook, chef_prep, waiter_p1, waiter_p2, waiter_p3)
+	GameConfig.advance_pipeline()
 
-	# Spawn customers first so the player sees them walk to their seats
-	_spawn_customer_batch()
+	# Shuffle customers at round START so they walk while waiters are running.
+	# By the time patience is ticked at round END they've had a full round to arrive.
+	_shuffle_seated_customers()
 
-	await _wait_for_customers_seated()
-	await _execute_waiter_turns(waiter_p1, waiter_p2, waiter_p3)
+	await _execute_npc_turns(chef_cook, chef_prep, waiter_p1, waiter_p2, waiter_p3)
 
+	# Tick patience for every active customer — deduct HP for each timeout.
 	var timed_out := _tick_all_customers()
-
 	for _i in range(timed_out):
 		GameConfig.deduct_hp(1)
 		hp_changed.emit(GameConfig.player_hp)
-		print("RoundManager: customer timed out — HP=%d" % GameConfig.player_hp)
+		print("RoundManager: customer timed out — HP now %d" % GameConfig.player_hp)
 
 	if GameConfig.is_game_over():
 		_trigger_game_over()
 		_round_active = false
 		return
 
+	if round_num % SPAWN_INTERVAL == 0:
+		_spawn_customer_batch()
+
 	_round_active = false
 	round_complete.emit(round_num)
 	print("RoundManager: === Round %d complete ===" % round_num)
 
-
-func _wait_for_customers_seated() -> void:
-	print("RoundManager: Phase 1 — waiting for customers to reach their plates")
-	var start_ms := Time.get_ticks_msec()
-
-	while Time.get_ticks_msec() - start_ms < SEAT_WAIT_LIMIT_MS:
-		var all_seated := true
-		for node in get_tree().get_nodes_in_group(GROUP_CUSTOMERS):
-			if node is CustomerFSM:
-				if (node as CustomerFSM).current_state == CustomerFSM.State.WALK_TO_SEAT:
-					all_seated = false
-					break
-		if all_seated:
-			break
-		await get_tree().process_frame
-
-	print("RoundManager: Phase 1 complete — all customers seated")
-
-
-func _execute_waiter_turns(w1_count: int, w2_count: int, w3_count: int) -> void:
+func _execute_npc_turns(
+	cook_count : int,
+	prep_count : int,
+	w1_count   : int,
+	w2_count   : int,
+	w3_count   : int
+) -> void:
 	_turns_remaining = 0
 
+	var chefs   : Array = get_tree().get_nodes_in_group(GROUP_CHEFS)
 	var waiters : Array = get_tree().get_nodes_in_group(GROUP_WAITERS)
-	waiters.sort_custom(func(a, b): return a.name < b.name)
+
+	var cooks_left := cook_count
+	var preps_left := prep_count
+
+	for node in chefs:
+		if not (node is ChefFSM):
+			continue
+		var chef := node as ChefFSM
+		var role := "idle"
+		if cooks_left > 0:
+			role = "cook"
+			cooks_left -= 1
+		elif preps_left > 0:
+			role = "prep"
+			preps_left -= 1
+		_dispatch_turn(chef, role)
 
 	var plate_roles : Array[String] = []
 	for _i in range(w1_count): plate_roles.append("plate1")
@@ -126,18 +126,8 @@ func _execute_waiter_turns(w1_count: int, w2_count: int, w3_count: int) -> void:
 			role_idx += 1
 		_dispatch_turn(waiter, role)
 
-	print("RoundManager: Phase 2 — dispatched %d waiter turn(s)" % _turns_remaining)
-
-	var phase2_start := Time.get_ticks_msec()
 	while _turns_remaining > 0:
-		if Time.get_ticks_msec() - phase2_start > PHASE2_TIMEOUT_MS:
-			push_warning("RoundManager: Phase 2 timed out — forcing turn completion")
-			_turns_remaining = 0
-			break
 		await get_tree().process_frame
-
-	print("RoundManager: Phase 2 complete — all waiter turns finished")
-
 
 func _dispatch_turn(npc: BaseFSM, role: String) -> void:
 	if npc.is_turn_active:
@@ -146,11 +136,8 @@ func _dispatch_turn(npc: BaseFSM, role: String) -> void:
 	npc.turn_complete.connect(_on_turn_complete, CONNECT_ONE_SHOT)
 	npc.execute_turn(role)
 
-
 func _on_turn_complete(_npc: BaseFSM) -> void:
 	_turns_remaining = maxi(0, _turns_remaining - 1)
-	print("RoundManager: waiter turn complete — %d remaining" % _turns_remaining)
-
 
 func _tick_all_customers() -> int:
 	var timed_out := 0
@@ -160,15 +147,19 @@ func _tick_all_customers() -> int:
 				timed_out += 1
 	return timed_out
 
+func _shuffle_seated_customers() -> void:
+	for node in get_tree().get_nodes_in_group(GROUP_CUSTOMERS):
+		if node is CustomerFSM:
+			(node as CustomerFSM).shuffle_plate()
 
 func _spawn_customer_batch() -> void:
 	if customer_scene == null:
-		push_warning("RoundManager: customer_scene not set — cannot spawn customers")
+		push_warning("RoundManager: customer_scene not set")
 		return
 
 	var plates : Array = get_tree().get_nodes_in_group(GROUP_PLATES)
 	if plates.is_empty():
-		push_error("RoundManager: no plate nodes in '%s' group!" % GROUP_PLATES)
+		push_error("RoundManager: no nodes in '%s' group!" % GROUP_PLATES)
 		return
 
 	plates.sort_custom(func(a, b): return a.name < b.name)
@@ -184,20 +175,18 @@ func _spawn_customer_batch() -> void:
 
 		var customer : CustomerFSM = customer_scene.instantiate() as CustomerFSM
 		if customer == null:
-			push_error("RoundManager: customer_scene did not instantiate as CustomerFSM!")
+			push_error("RoundManager: customer_scene is not CustomerFSM!")
 			return
 
 		var kitchen_root := get_tree().current_scene
 		if kitchen_root == null:
-			push_error("RoundManager: no current_scene to add customer to!")
 			customer.queue_free()
 			return
 
 		kitchen_root.add_child(customer)
 		customer.global_position = spawn_root.global_position
-
-		customer.assigned_plate = plate as Node2D
-		customer.plate_index    = plates.find(plate) + 1
+		customer.assigned_plate  = plate as Node2D
+		customer.plate_index     = plates.find(plate) + 1
 		customer.add_to_group(GROUP_CUSTOMERS)
 
 		customer.customer_fed.connect(_on_customer_fed)
@@ -209,8 +198,7 @@ func _spawn_customer_batch() -> void:
 		if spawned >= MAX_PLATES:
 			break
 
-	print("RoundManager: spawned %d new customer(s)" % spawned)
-
+	print("RoundManager: spawned %d customer(s)" % spawned)
 
 func _register_existing_customers() -> void:
 	for node in get_tree().get_nodes_in_group(GROUP_CUSTOMERS):
@@ -225,24 +213,18 @@ func _register_existing_customers() -> void:
 			c.assigned_plate = GameConfig.find_least_occupied_plate()
 			c.walk_to_seat()
 
-
 func _on_customer_fed(customer: CustomerFSM) -> void:
-	print("RoundManager: customer '%s' fed — score=%d" % [customer.name, GameConfig.score])
-
+	print("RoundManager: '%s' fed — score=%d" % [customer.name, GameConfig.score])
 
 func _on_customer_timed_out(customer: CustomerFSM) -> void:
-	print("RoundManager: customer '%s' timed out — HP=%d" \
-		  % [customer.name, GameConfig.player_hp])
-
+	print("RoundManager: '%s' timed out — HP=%d" % [customer.name, GameConfig.player_hp])
 
 func _trigger_game_over() -> void:
 	for node in get_tree().get_nodes_in_group(GROUP_DEATH_SFX):
 		if node is AudioStreamPlayer or node is AudioStreamPlayer2D:
 			node.play()
-	print("RoundManager: GAME OVER — HP=%d score=%d" \
-		  % [GameConfig.player_hp, GameConfig.score])
+	print("RoundManager: GAME OVER — score=%d" % GameConfig.score)
 	game_over.emit()
-
 
 func get_current_round() -> int:  return GameConfig.current_round
 func get_player_hp()     -> int:  return GameConfig.player_hp

@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://bkbf0oh0ld66l" path="res://my_character_assets/sprites/character/Animated-2D-Sprites/tile_0009.png" id="3_ljna4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3fqnl"]
-size = Vector2(21, 20)
+size = Vector2(20, 15)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ekynv"]
 animations = [{
@@ -22,17 +22,17 @@ animations = [{
 }]
 
 [node name="WaiterNPC" type="CharacterBody2D" unique_id=171770866 groups=["waiters"]]
+position = Vector2(3, -2)
 script = ExtResource("1_5f8dp")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=478590320]
-position = Vector2(0.5, 0)
+position = Vector2(1, 1.5)
 shape = SubResource("RectangleShape2D_3fqnl")
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="." unique_id=383138146]
-avoidance_enabled = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1412917044]
-position = Vector2(0, -2)
-scale = Vector2(1, 0.9166667)
+position = Vector2(0.49999976, -0.9999994)
+scale = Vector2(0.875, 0.8333334)
 sprite_frames = SubResource("SpriteFrames_ekynv")
 frame_progress = 0.15192035

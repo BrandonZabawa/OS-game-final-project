@@ -1,15 +1,6 @@
 # =============================================================================
 # base_fsm.gd
 # =============================================================================
-# PURPOSE: The shared "spine" for every NPC type (Chef, Waiter, Customer).
-#
-# WHY A BASE CLASS?
-#   All three NPC types need the same low-level capabilities:
-#     - Moving through the level (direct threshold movement — no navmesh needed)
-#     - Playing animations via AnimatedSprite2D
-#     - Transitioning between named integer states safely
-#     - Emitting signals so the RoundManager can react without tight coupling
-# =============================================================================
 
 class_name BaseFSM
 extends CharacterBody2D
@@ -25,20 +16,7 @@ signal turn_complete(npc: BaseFSM)
 @onready var nav_agent   : NavigationAgent2D = $NavigationAgent2D if has_node("NavigationAgent2D") else null
 @onready var anim_sprite : AnimatedSprite2D  = $AnimatedSprite2D  if has_node("AnimatedSprite2D")  else null
 
-# NavigationAgent2D kept for scene compatibility but NOT used for pathfinding.
-# Direct movement is used instead so no baked navmesh is required.
-@onready var nav_agent   : NavigationAgent2D = $NavigationAgent2D if has_node("NavigationAgent2D") else null
-@onready var anim_sprite : AnimatedSprite2D  = $AnimatedSprite2D  if has_node("AnimatedSprite2D")  else null
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
 const ARRIVAL_THRESHOLD : float = 6.0
-
-# ---------------------------------------------------------------------------
-# Internal state
-# ---------------------------------------------------------------------------
 
 var current_state  : int     = -1
 var previous_state : int     = -1
@@ -51,23 +29,17 @@ var _finish_on_arrival : bool = false
 var is_turn_active : bool   = false
 var current_role   : String = ""
 
-# ---------------------------------------------------------------------------
-# Godot lifecycle
-# ---------------------------------------------------------------------------
-
 func _ready() -> void:
+	# NPCs live on layer 2 and only collide with layer 1 (environment/walls).
+	# This prevents NPC bodies from physically pushing each other.
+	collision_layer = 2
+	collision_mask  = 1
 	_on_ready()
 
 func _physics_process(delta: float) -> void:
-	#print("_is_moving: ", _is_moving, "\n")
-	#print("Arrival state: ", _arrival_state, "\n")
-	#print("_finish_on_arrival: ", _finish_on_arrival, "\n")
-	#print("delta: ", delta, "\n")
 	if _is_moving:
 		_process_navigation()
 
-	# Arrival check: _process_navigation() sets _is_moving=false when within
-	# ARRIVAL_THRESHOLD, so this fires exactly one frame after we stop.
 	if _arrival_state >= 0 and not _is_moving:
 		var s      := _arrival_state
 		var finish := _finish_on_arrival
@@ -78,11 +50,8 @@ func _physics_process(delta: float) -> void:
 		if finish:
 			call_deferred("_finish_turn")
 		return
-	_process_state(delta)
 
-# ---------------------------------------------------------------------------
-# Overridable hooks (implement in subclasses)
-# ---------------------------------------------------------------------------
+	_process_state(delta)
 
 func _on_ready() -> void:
 	pass
@@ -114,9 +83,6 @@ func _finish_turn() -> void:
 func _deferred_turn_complete() -> void:
 	turn_complete.emit(self)
 
-func _deferred_turn_complete() -> void:
-	turn_complete.emit(self)
-
 func change_state(new_state: int) -> void:
 	if new_state == current_state:
 		return
@@ -140,7 +106,6 @@ func move_to_idle(target_pos: Vector2, idle_state: int) -> void:
 func has_reached_target() -> bool:
 	return global_position.distance_to(_move_target) <= ARRIVAL_THRESHOLD
 
-#TODO: look at _process_navigation() below and tweak it. This could be the reason the pathfinding is off (wrong)
 func _process_navigation() -> void:
 	var diff : Vector2 = _move_target - global_position
 	var dist : float   = diff.length()
@@ -155,8 +120,17 @@ func _process_navigation() -> void:
 	velocity = diff.normalized() * move_speed
 	move_and_slide()
 
-	velocity = diff.normalized() * move_speed
-	move_and_slide()
+# Returns a horizontal spread offset so multiple NPCs targeting the same
+# position fan out instead of stacking. Spacing is pixels between slots.
+func _npc_group_slot_offset(group_name: String, spacing: float) -> Vector2:
+	var members := get_tree().get_nodes_in_group(group_name)
+	members.sort_custom(func(a, b): return a.name < b.name)
+	var idx   : int = members.find(self)
+	var count : int = members.size()
+	if idx < 0 or count == 0:
+		return Vector2.ZERO
+	var offset_x := (idx - (count - 1) * 0.5) * spacing
+	return Vector2(offset_x, 0.0)
 
 func play_anim(anim_name: String) -> void:
 	if anim_sprite == null:

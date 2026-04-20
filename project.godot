@@ -34,7 +34,6 @@ version_control/autoload_on_startup=true
 chefs=""
 customers=""
 waiters=""
-plates=""
 waiter_table=""
 death_sound=""
 hibatchi_grill=""

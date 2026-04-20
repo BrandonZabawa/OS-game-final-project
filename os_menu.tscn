@@ -4,9 +4,6 @@
 
 [sub_resource type="Theme" id="Theme_2g2i4"]
 
-; ─────────────────────────────────────────────────────────────────────────────
-; ROOT — full-rect Control, script attached
-; ─────────────────────────────────────────────────────────────────────────────
 [node name="OSMenuScreen" type="Control" unique_id=183325884]
 layout_mode = 3
 anchors_preset = 15
@@ -16,7 +13,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_2g2i4")
 
-; Dark background that fills the whole viewport
 [node name="Background" type="ColorRect" parent="." unique_id=1666489746]
 layout_mode = 1
 anchors_preset = 15
@@ -26,7 +22,6 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.039, 0.047, 0.059, 1)
 
-; Center the OSWindow in the viewport
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=159040360]
 layout_mode = 1
 anchors_preset = 15
@@ -35,9 +30,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-; ─────────────────────────────────────────────────────────────────────────────
-; OS WINDOW  (PanelContainer styled in code via _apply_theme)
-; ─────────────────────────────────────────────────────────────────────────────
 [node name="OSWindow" type="PanelContainer" parent="CenterContainer" unique_id=2102271661]
 custom_minimum_size = Vector2(760, 0)
 layout_mode = 2
@@ -47,9 +39,6 @@ theme = SubResource("Theme_2g2i4")
 layout_mode = 2
 theme_override_constants/separation = 0
 
-; ─────────────────────────────────────────────────────────────────────────────
-; TITLE BAR  — "KITCHEN OS · ROUND 01 · HP: 3/3 · SCORE: 0"
-; ─────────────────────────────────────────────────────────────────────────────
 [node name="TitleBar" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox" unique_id=533858801]
 custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
@@ -63,7 +52,6 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 text = "KITCHEN OS"
-horizontal_alignment = 0
 
 [node name="RoundLabel" type="Label" parent="CenterContainer/OSWindow/OSVBox/TitleBar/TitleHBox" unique_id=55581912]
 unique_name_in_owner = true
@@ -83,15 +71,11 @@ text = "SCORE: 0"
 [node name="TitleSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox" unique_id=1750518393]
 layout_mode = 2
 
-; ─────────────────────────────────────────────────────────────────────────────
-; BODY ROW  — three columns: CHEFS | separator | WAITERS | separator | (NPC STATUS built in code)
-; ─────────────────────────────────────────────────────────────────────────────
 [node name="BodyRow" type="HBoxContainer" parent="CenterContainer/OSWindow/OSVBox" unique_id=48077577]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 
-; ── Column 1: CHEFS ──────────────────────────────────────────────────────────
 [node name="ChefsPanel" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow" unique_id=300000003]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
@@ -138,11 +122,9 @@ custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
 
-; ── Separator 1 ──────────────────────────────────────────────────────────────
 [node name="VSep1" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow" unique_id=217401735]
 layout_mode = 2
 
-; ── Column 2: WAITERS ────────────────────────────────────────────────────────
 [node name="WaitersPanel" type="PanelContainer" parent="CenterContainer/OSWindow/OSVBox/BodyRow" unique_id=300000013]
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
@@ -204,15 +186,9 @@ custom_minimum_size = Vector2(72, 0)
 layout_mode = 2
 max_value = 7.0
 
-; ── Separator 2  (script checks vsep2 by path before StatusPanel is built) ──
 [node name="VSep2" type="VSeparator" parent="CenterContainer/OSWindow/OSVBox/BodyRow" unique_id=1702186122]
 layout_mode = 2
 
-; Column 3 (NPC STATUS) is appended here at runtime by _build_status_queue_panel()
-
-; ─────────────────────────────────────────────────────────────────────────────
-; FOOTER
-; ─────────────────────────────────────────────────────────────────────────────
 [node name="FooterSep" type="HSeparator" parent="CenterContainer/OSWindow/OSVBox" unique_id=1693381651]
 layout_mode = 2
 

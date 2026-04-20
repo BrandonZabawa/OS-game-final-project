@@ -105,19 +105,15 @@ func add_score(amount: int = 1) -> void:
 # ---------------------------------------------------------------------------
 
 ## Returns the plate Node2D for a 1-based index (1, 2, or 3).
-## Plates are sorted alphabetically by node name so the mapping is stable.
+## Each plate instance belongs to its own unique group ("plate1", "plate2", "plate3").
 func get_plate_node(index: int) -> Node2D:
 	var tree := get_tree()
 	if tree == null:
 		return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	if plates.is_empty():
+	if index < 1 or index > MAX_PLATES:
 		return null
-	plates.sort_custom(func(a, b): return a.name < b.name)
-	var i := index - 1
-	if i < 0 or i >= plates.size():
-		return null
-	return plates[i] as Node2D
+	var node := tree.get_first_node_in_group("plate%d" % index)
+	return node as Node2D
 
 ## Returns how many CustomerFSM nodes are currently assigned to a given plate.
 func customers_at_plate(plate: Node2D) -> int:
@@ -134,21 +130,16 @@ func customers_at_plate(plate: Node2D) -> int:
 
 ## Finds the plate with the fewest customers currently assigned.
 func find_least_occupied_plate() -> Node2D:
-	var tree := get_tree()
-	if tree == null:
-		return null
-	var plates : Array = tree.get_nodes_in_group("plates")
-	if plates.is_empty():
-		return null
-	plates.sort_custom(func(a, b): return a.name < b.name)
+	var best_plate : Node2D = null
+	var best_count : int    = 99
 
-	var best_plate  : Node2D = null
-	var best_count  : int    = 99
-
-	for plate in plates:
-		var c := customers_at_plate(plate as Node2D)
+	for i in range(1, MAX_PLATES + 1):
+		var plate := get_plate_node(i)
+		if plate == null:
+			continue
+		var c := customers_at_plate(plate)
 		if c < best_count:
 			best_count = c
-			best_plate = plate as Node2D
+			best_plate = plate
 
 	return best_plate

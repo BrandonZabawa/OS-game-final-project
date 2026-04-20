@@ -15447,7 +15447,7 @@ tile_set = SubResource("TileSet_wll1m")
 tile_map_data = PackedByteArray("AAD9//b/AAAIAG8AAAD9//f/AAAIAHAAAAD9//j/AAAIAHEAAAD9//n/AAAIAHIAAAD+//b/AAAJAG8AAAD+//f/AAAJAHAAAAD+//j/AAAJAHEAAAD+//n/AAAJAHIAAAD///b/AAAKAG8AAAD///f/AAAKAHAAAAD///j/AAAKAHEAAAD///n/AAAKAHIAAAAAAPb/AAALAG8AAAAAAPf/AAALAHAAAAAAAPj/AAALAHEAAAAAAPn/AAALAHIAAAABAPb/AAAMAG8AAAABAPf/AAAMAHAAAAABAPj/AAAMAHEAAAABAPn/AAAMAHIAAAACAPb/AAANAG8AAAACAPf/AAANAHAAAAACAPn/AAANAHIAAAADAPb/AAAOAG8AAAADAPf/AAAOAHAAAAADAPn/AAAOAHIAAAAEAPb/AAAPAG8AAAAEAPf/AAAPAHAAAAAEAPj/AAAPAHEAAAACAPj/AAANAHEAAAADAPj/AAAOAHEAAAAEAPn/AAAPAHIAAAA=")
 tile_set = SubResource("TileSet_wrif2")
 
-[node name="waiter-side-table" type="TileMapLayer" parent="Environment" unique_id=1152948029 groups=["waiter_table"]]
+[node name="waiter-side-table" type="TileMapLayer" parent="Environment" unique_id=1152948029]
 position = Vector2(-1, 0)
 tile_map_data = PackedByteArray("AAD3//z/AAAAAAEAAAD3//3/AAAAAAIAAAD3//7/AAAAAAMAAAD4//z/AAABAAEAAAD4//3/AAABAAIAAAD4//7/AAABAAMAAAD3//v/AAAAAAAAAAD4//v/AAABAAAAAAD5//v/AAACAAAAAAD5//z/AAACAAEAAAD5//3/AAACAAIAAAD5//7/AAACAAMAAAD6//v/AAADAAAAAAD6//z/AAADAAEAAAD6//3/AAADAAIAAAD6//7/AAADAAMAAAD7//v/AAAEAAAAAAD7//z/AAAEAAEAAAD7//3/AAAEAAIAAAD7//7/AAAEAAMAAAD8//v/AAAFAAAAAAD8//z/AAAFAAEAAAD8//3/AAAFAAIAAAD8//7/AAAFAAMAAAD9//v/AAAGAAAAAAD9//z/AAAGAAEAAAD9//3/AAAGAAIAAAD9//7/AAAGAAMAAAD+//v/AAAHAAAAAAD+//z/AAAHAAEAAAD+//3/AAAHAAIAAAD+//7/AAAHAAMAAAD///v/AAAIAAAAAAD///z/AAAIAAEAAAD///3/AAAIAAIAAAD///7/AAAIAAMAAAAAAPv/AAAAAAAAAAAAAPz/AAAAAAEAAAAAAP3/AAAAAAIAAAAAAP7/AAAAAAMAAAABAPv/AAABAAAAAAABAPz/AAABAAEAAAABAP3/AAABAAIAAAABAP7/AAABAAMAAAACAPv/AAACAAAAAAACAPz/AAACAAEAAAACAP3/AAACAAIAAAACAP7/AAACAAMAAAADAPv/AAADAAAAAAADAPz/AAADAAEAAAADAP3/AAADAAIAAAADAP7/AAADAAMAAAAEAPv/AAAEAAAAAAAEAPz/AAAEAAEAAAAEAP3/AAAEAAIAAAAEAP7/AAAEAAMAAAAFAPv/AAAFAAAAAAAFAPz/AAAFAAEAAAAFAP3/AAAFAAIAAAAFAP7/AAAFAAMAAAAGAPv/AAAGAAAAAAAGAPz/AAAGAAEAAAAGAP3/AAAGAAIAAAAGAP7/AAAGAAMAAAAHAPv/AAAHAAAAAAAHAPz/AAAHAAEAAAAHAP3/AAAHAAIAAAAHAP7/AAAHAAMAAAAIAPv/AAAIAAAAAAAIAPz/AAAIAAEAAAAIAP3/AAAIAAIAAAAIAP7/AAAIAAMAAAA=")
 tile_set = SubResource("TileSet_buwsd")
@@ -15472,34 +15472,34 @@ visible = false
 position = Vector2(-56, -82)
 
 [node name="customer" parent="Characters" unique_id=1816802054 instance=ExtResource("7_wrif2")]
-position = Vector2(80, 89)
+position = Vector2(23, 93)
 
 [node name="customer2" parent="Characters" unique_id=1569100712 instance=ExtResource("7_wrif2")]
 position = Vector2(-6, 90)
 
 [node name="customer3" parent="Characters" unique_id=1557624520 instance=ExtResource("7_wrif2")]
-position = Vector2(-76, 93)
+position = Vector2(-34, 92)
 
 [node name="WaiterNPC" parent="Characters" unique_id=171770866 instance=ExtResource("8_xk85h")]
-position = Vector2(-16, -83)
+position = Vector2(52, -102)
 
 [node name="WaiterNPC2" parent="Characters" unique_id=1266700237 instance=ExtResource("8_xk85h")]
-position = Vector2(19, -80)
+position = Vector2(77, -102)
 
 [node name="WaiterNPC3" parent="Characters" unique_id=397291221 instance=ExtResource("8_xk85h")]
-position = Vector2(49, -79)
+position = Vector2(99, -102)
 
 [node name="FoodItems" type="Node2D" parent="." unique_id=212872155]
 position = Vector2(143, -117)
 
-[node name="plate1" parent="FoodItems" unique_id=1883803842 instance=ExtResource("8_buwsd")]
-position = Vector2(-35, -101)
+[node name="plate1" parent="FoodItems" unique_id=1883803842 groups=["plate1"] instance=ExtResource("8_buwsd")]
+position = Vector2(-98, -55)
 
-[node name="plate2" parent="FoodItems" unique_id=205616902 instance=ExtResource("8_buwsd")]
-position = Vector2(134, -104)
+[node name="plate2" parent="FoodItems" unique_id=205616902 groups=["plate2"] instance=ExtResource("8_buwsd")]
+position = Vector2(-2, -56)
 
-[node name="plate3" parent="FoodItems" unique_id=815580278 instance=ExtResource("8_buwsd")]
-position = Vector2(46, -103)
+[node name="plate3" parent="FoodItems" unique_id=815580278 groups=["plate3"] instance=ExtResource("8_buwsd")]
+position = Vector2(94, -54)
 
 [node name="top-bun" parent="FoodItems" unique_id=553641104 instance=ExtResource("10_0mlcs")]
 visible = false
