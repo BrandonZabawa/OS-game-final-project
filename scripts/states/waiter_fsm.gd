@@ -38,10 +38,11 @@ func _on_state_enter(state: int) -> void:
 		State.IDLE:
 			pass
 
-		State.WALK_TO_PATTY:
-			var patty := get_tree().get_first_node_in_group("cook_patty") as Node2D
-			if patty:
-				move_to_state(patty.global_position, State.WALK_TO_PLATE)
+		State.WALK_TO_WAITER_TABLE:
+			play_anim("walk")
+			var table := _get_waiter_table()
+			if table:
+				move_to_state(table.global_position, State.PICKUP_BURGER)
 			else:
 				push_warning("WaiterFSM (%s): no node in 'cook_patty' group — check editor" % name)
 				_finish_turn()

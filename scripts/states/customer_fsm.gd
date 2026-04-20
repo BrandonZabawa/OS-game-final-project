@@ -80,4 +80,34 @@ func walk_to_seat() -> void:
 	change_state(State.WALK_TO_SEAT)
 
 func is_seated() -> bool:
-	return current_state in [State.WAITING, State.FED]
+	return current_state in [State.IDLE_SEATED, State.WAITING, State.FED]
+
+func is_fed() -> bool:
+	return _has_been_fed
+
+func _assign_random_patience() -> void:
+	var roll := randi() % 3
+	match roll:
+		0:
+			patience_tier   = PatienceTier.LOW
+			turns_remaining = PATIENCE_TURNS[PatienceTier.LOW]
+		1:
+			patience_tier   = PatienceTier.MEDIUM
+			turns_remaining = PATIENCE_TURNS[PatienceTier.MEDIUM]
+		_:
+			patience_tier   = PatienceTier.HIGH
+			turns_remaining = PATIENCE_TURNS[PatienceTier.HIGH]
+	print("CustomerFSM (%s): patience tier=%s turns=%d" \
+		  % [name, PatienceTier.keys()[patience_tier], turns_remaining])
+
+func _update_label() -> void:
+	if patience_label == null:
+		return
+	patience_label.text = str(turns_remaining)
+
+	if turns_remaining <= 3:
+		patience_label.add_theme_color_override("font_color", Color.RED)
+	elif turns_remaining <= 7:
+		patience_label.add_theme_color_override("font_color", Color.YELLOW)
+	else:
+		patience_label.add_theme_color_override("font_color", Color.WHITE)
