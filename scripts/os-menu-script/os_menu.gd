@@ -51,6 +51,8 @@ func _connect_signals() -> void:
 		RoundManager.hp_changed.connect(_on_hp_changed)
 	if not RoundManager.game_over.is_connected(_on_game_over):
 		RoundManager.game_over.connect(_on_game_over)
+	if not RoundManager.game_won.is_connected(_on_game_won):
+		RoundManager.game_won.connect(_on_game_won)
 
 func _on_spin_changed(_v: float) -> void:
 	_refresh_display()
@@ -64,6 +66,10 @@ func _on_hp_changed(_new_hp: int) -> void:
 	_refresh_display()
 
 func _on_game_over() -> void:
+	_refresh_display()
+	start_btn.disabled = true
+
+func _on_game_won() -> void:
 	_refresh_display()
 	start_btn.disabled = true
 
@@ -82,7 +88,7 @@ func _on_start_round_pressed() -> void:
 	_refresh_display()
 
 	# Only re-enable if the game is still running.
-	if not GameConfig.is_game_over():
+	if not GameConfig.is_game_over() and not GameConfig.is_game_won():
 		start_btn.disabled = false
 
 func _dispatch_waiters_from_spins() -> void:
@@ -112,6 +118,10 @@ func _dispatch_waiters_from_spins() -> void:
 			else:
 				waiter.execute_turn(role)
 			role_idx += 1
+		else:
+			# Spin decreased — send active waiter back to idle position.
+			if waiter.is_turn_active:
+				waiter.return_to_idle_position()
 
 func _build_status_queue_panel() -> void:
 	if body_row == null:
@@ -247,7 +257,7 @@ func _refresh_display() -> void:
 
 	var any_alloc := (cook_spin.value + prep_spin.value
 		+ plate1_spin.value + plate2_spin.value + plate3_spin.value) > 0
-	start_btn.disabled = not any_alloc or RoundManager.is_round_active() or GameConfig.is_game_over()
+	start_btn.disabled = not any_alloc or RoundManager.is_round_active() or GameConfig.is_game_over() or GameConfig.is_game_won()
 
 func _reset_spins() -> void:
 	for spin in [cook_spin, prep_spin, plate1_spin, plate2_spin, plate3_spin]:

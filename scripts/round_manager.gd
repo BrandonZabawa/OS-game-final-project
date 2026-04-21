@@ -214,7 +214,11 @@ func _register_existing_customers() -> void:
 			c.walk_to_seat()
 
 func _on_customer_fed(customer: CustomerFSM) -> void:
+	GameConfig.add_score(1)
+	hp_changed.emit(GameConfig.player_hp)
 	print("RoundManager: '%s' fed — score=%d" % [customer.name, GameConfig.score])
+	if GameConfig.is_game_won():
+		_trigger_game_won()
 
 func _on_customer_timed_out(customer: CustomerFSM) -> void:
 	print("RoundManager: '%s' timed out — HP=%d" % [customer.name, GameConfig.player_hp])
@@ -225,6 +229,10 @@ func _trigger_game_over() -> void:
 			node.play()
 	print("RoundManager: GAME OVER — score=%d" % GameConfig.score)
 	game_over.emit()
+
+func _trigger_game_won() -> void:
+	print("RoundManager: GAME WON — score=%d" % GameConfig.score)
+	game_won.emit()
 
 func get_current_round() -> int:  return GameConfig.current_round
 func get_player_hp()     -> int:  return GameConfig.player_hp

@@ -84,5 +84,12 @@ func redirect_to(role: String) -> void:
 	target_plate       = plate
 	change_state(State.WALK_TO_PLATE)
 
+func return_to_idle_position() -> void:
+	_is_moving         = false
+	_arrival_state     = -1
+	_finish_on_arrival = false
+	target_plate       = null
+	change_state(State.RETURN_TO_IDLE)
+
 func is_available() -> bool:
 	return current_state == State.IDLE and not is_turn_active
