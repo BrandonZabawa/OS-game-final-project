@@ -74,7 +74,12 @@ func _on_state_enter(state: int) -> void:
 			customer_fed.emit(self)
 			await get_tree().create_timer(1.0).timeout
 			if _state_gen != gen: return
-			change_state(State.LEAVING)
+			# Reset and move to a new plate for the next service cycle.
+			_assign_random_patience()
+			_update_label()
+			_has_been_fed = false
+			_pick_new_plate()
+			change_state(State.WALK_TO_SEAT)
 
 		State.LEAVING:
 			play_anim("walk")
@@ -136,6 +141,16 @@ func is_seated() -> bool:
 
 func is_fed() -> bool:
 	return _has_been_fed
+
+func _pick_new_plate() -> void:
+	var groups := ["plate1", "plate2", "plate3"]
+	groups.shuffle()
+	for group in groups:
+		var plate := get_tree().get_first_node_in_group(group) as Node2D
+		if plate != null and plate != assigned_plate:
+			assigned_plate = plate
+			return
+	# Fallback: stay at same plate if no other is available.
 
 func _assign_random_patience() -> void:
 	var roll := randi() % 3

@@ -33,6 +33,7 @@ var score         : int = 0
 
 const MAX_HP     : int = 3
 const MAX_PLATES : int = 3
+const WIN_SCORE  : int = 12
 
 func set_turn_allocations(cooks: int, preps: int, w1: int, w2: int, w3: int) -> void:
 	chef_cook_count     = cooks
@@ -54,6 +55,9 @@ func deduct_hp(amount: int = 1) -> void:
 
 func is_game_over() -> bool:
 	return player_hp <= 0
+
+func is_game_won() -> bool:
+	return score >= WIN_SCORE
 
 func add_score(amount: int = 1) -> void:
 	score += amount
