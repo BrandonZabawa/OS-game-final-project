@@ -35,6 +35,7 @@ func start_game() -> void:
 
 	_spawn_customer_batch()
 	_register_existing_customers()
+	_register_waiters()
 	print("RoundManager: game started")
 
 func execute_round(
@@ -81,6 +82,9 @@ func execute_round(
 	_round_active = false
 	round_complete.emit(round_num)
 	print("RoundManager: === Round %d complete ===" % round_num)
+
+	if round_num >= 12 and not GameConfig.is_game_won():
+		_trigger_game_won()
 
 func _execute_npc_turns(
 	cook_count : int,
@@ -212,6 +216,22 @@ func _register_existing_customers() -> void:
 		if c.assigned_plate == null:
 			c.assigned_plate = GameConfig.find_least_occupied_plate()
 			c.walk_to_seat()
+
+func _register_waiters() -> void:
+	for node in get_tree().get_nodes_in_group(GROUP_WAITERS):
+		if not (node is WaiterFSM):
+			continue
+		var w := node as WaiterFSM
+		if not w.burger_delivered.is_connected(_on_burger_delivered):
+			w.burger_delivered.connect(_on_burger_delivered)
+
+func _on_burger_delivered(_waiter: WaiterFSM, plate: Node2D) -> void:
+	for node in get_tree().get_nodes_in_group(GROUP_CUSTOMERS):
+		if node is CustomerFSM:
+			var c := node as CustomerFSM
+			if c.assigned_plate == plate:
+				c.receive_meal()
+				return
 
 func _on_customer_fed(customer: CustomerFSM) -> void:
 	GameConfig.add_score(1)
