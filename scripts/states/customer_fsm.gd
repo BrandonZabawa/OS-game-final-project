@@ -4,9 +4,9 @@ extends BaseFSM
 enum PatienceTier { LOW, MEDIUM, HIGH }
 
 const PATIENCE_TURNS : Dictionary = {
-	PatienceTier.LOW    : 5,
-	PatienceTier.MEDIUM : 10,
-	PatienceTier.HIGH   : 30,
+	PatienceTier.LOW    : 1, # TODO: Change back to 5 once full-gameplay is fleshed out
+	PatienceTier.MEDIUM : 3, # TODO: Change back to 10 once full-gameplay is fleshed out
+	PatienceTier.HIGH   : 5, # TODO: Change back to 30 once full-gameplay is fleshed out
 }
 
 enum State {
